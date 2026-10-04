@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Перезавантаження стосунків. Мінікурс про близькість після переїзду</title>
+<meta name="description" content="Психологічний мінікурс із 5 лекцій: чому після переїзду між вами з’явилася дистанція, які потреби стоять за претензіями і як говорити про важливе без звинувачень.">
+<meta property="og:title" content="Ми переїхали разом, але стали далі один від одного">
+<meta property="og:description" content="Мінікурс із 5 лекцій, практичних вправ і робочого зошита: зрозумійте, що змінилося у стосунках після переїзду, і зробіть перші кроки до змін.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:image" content="img/og.jpg">
+<meta name="theme-color" content="#2B2D20">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- ТЕСТОВЕ РОЗМІЩЕННЯ: рядок нижче ховає сайт від пошуковиків. Видаліть його перед запуском. -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --base:#2B2D20;
+  --mid:#4B4D2C;
+  --deep:#1B1C14;
+  --panel:#23251A;
+  --cream:#F4EFE7;
+  --ink:#27281F;
+  --ink-soft:#5D5E50;
+  --sand:#CFBBA2;
+  --clay:#B98A5E;
+  --gold:#E3C56E;
+  --on:#F2ECE2;
+  --line-d:rgba(242,236,226,.22);
+  --line-l:rgba(39,40,31,.16);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--base);color:var(--on);font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:700;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+h2{font-size:clamp(1.3rem,2.6vw,1.8rem);line-height:1.25;margin-bottom:1em}
+h3{font-size:1.05rem;line-height:1.3}
+p{margin:0 0 1em}
+ul,ol{margin:0;padding:0;list-style:none}
+a{color:inherit}
+b,strong{font-weight:700}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.band{padding:clamp(36px,6vw,64px) 0}
+.g1{background:linear-gradient(var(--base),var(--deep))}
+.g2{background:linear-gradient(var(--deep),var(--mid))}
+.g3{background:linear-gradient(var(--mid),var(--base))}
+.center{text-align:center}
+.on-dark h2{color:var(--sand)}
+.card h2,.on-dark .card h2{color:var(--ink)}
+.narrow{max-width:44rem}
+.center .narrow{margin-left:auto;margin-right:auto}
+.sand{color:var(--sand)}
+
+.card{background:var(--cream);color:var(--ink);border-radius:22px;padding:clamp(24px,4.5vw,44px);box-shadow:0 0 30px rgba(207,187,162,.32)}
+.card + .card,.card + .strip,.strip + .card{margin-top:28px}
+.strip{background:var(--deep);border-radius:16px;padding:26px 24px;text-align:center;font-weight:500;box-shadow:0 0 22px rgba(207,187,162,.25)}
+
+/* кнопка */
+.buy{display:inline-block;background:var(--cream);color:var(--ink);text-decoration:none;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;padding:1.05em 2.4em;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.3);transition:background .2s,transform .2s}
+.buy:hover{background:#fff;transform:translateY(-1px)}
+.buy--dark{background:var(--base);color:var(--on)}
+.buy--dark:hover{background:var(--mid)}
+.cta-row{text-align:center;margin-top:36px}
+
+/* ціна */
+.price{margin:0 0 22px;line-height:1.1}
+.price b{display:block;color:var(--gold);font-size:2.3rem}
+.price s{display:block;font-size:1.1rem;opacity:.75;margin-top:4px}
+
+/* перший екран */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);min-height:min(92vh,800px);background:linear-gradient(90deg,#3A3D26,var(--base) 52%)}
+.hero-txt{align-self:center;justify-self:end;max-width:700px;padding:clamp(36px,6vw,72px) clamp(20px,4.5vw,64px)}
+.hero .kicker{font-size:.95rem;margin-bottom:22px;opacity:.9}
+.hero .name{font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.hero .sub{color:var(--sand);margin-bottom:28px}
+.hero h1{font-size:clamp(1.5rem,3.1vw,2.3rem);line-height:1.22;margin-bottom:20px}
+.hero .lead{font-size:clamp(1.05rem,1.6vw,1.2rem);margin-bottom:14px}
+.hero .about{margin-bottom:30px;opacity:.85;font-size:.98rem}
+.hero .inside{margin:28px 0 0;padding-top:22px;border-top:1px solid var(--line-d);font-weight:500}
+.hero-img{position:relative;min-height:300px}
+.hero-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:45% 30%}
+.hero-img::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--base),rgba(43,45,32,0) 28%)}
+
+/* рядки з розділювачами */
+.rows li{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-l)}
+.on-dark .rows li{border-color:var(--line-d)}
+.rows li::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--clay)}
+.aside{font-style:italic;font-size:1.25rem;margin:26px 0 0;text-align:center}
+
+/* галочки */
+.checks li{position:relative;padding:7px 0 7px 32px}
+.checks li::before{content:"";position:absolute;left:0;top:10px;width:19px;height:19px;border-radius:50%;background:var(--base) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%23F5EDE8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat}
+.checks span{color:var(--ink-soft)}
+
+/* претензія і потреба */
+.pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:30px 0}
+.pairs > div{border:1px solid var(--line-d);border-radius:16px;padding:22px;background:rgba(0,0,0,.14)}
+.pairs dt{font-style:italic;font-size:1.05rem;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line-d)}
+.pairs dd{margin:0;font-weight:600}
+.pairs span{display:block;font-size:.8rem;font-style:normal;font-weight:400;color:var(--sand);margin-bottom:5px}
+.chain{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 4px;margin:8px 0 26px;font-weight:600}
+.chain li:not(:last-child)::after{content:"→";margin:0 8px;color:var(--gold)}
+
+/* 4 сфери */
+.spheres{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.spheres li{padding:20px 0;border-top:1px solid var(--line-l)}
+.spheres p{margin:6px 0;color:var(--ink-soft);font-size:.95rem}
+.spheres .q{font-style:italic;color:var(--ink);margin:0}
+
+/* програма */
+.step{display:grid;grid-template-columns:1fr 26%;background:var(--panel);border:1px solid rgba(243,233,228,.75);margin-top:18px}
+.step .txt{padding:clamp(22px,4vw,38px) clamp(20px,4.5vw,46px)}
+.step .k{font-weight:600;font-size:1.05rem;text-transform:uppercase;color:var(--sand);margin:0 0 4px}
+.step h3{font-size:clamp(1.25rem,3vw,1.8rem);color:var(--sand);margin-bottom:.8em}
+.step p{font-size:1.06rem}
+.step .practice{margin:0}
+.step ul{margin:0 0 1em}
+.step ul li{position:relative;padding:3px 0 3px 20px;opacity:.9}
+.step ul li::before{content:"";position:absolute;left:0;top:.75em;width:7px;height:7px;border-radius:50%;background:var(--clay)}
+.art{display:grid;place-items:center;background:linear-gradient(160deg,var(--mid),#33361F);background-size:cover;background-position:center;font-weight:700;font-size:clamp(5rem,13vw,9rem);line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--sand)}
+
+/* результати */
+.gains b{color:#fff}
+
+/* оплата */
+.pay{background:var(--mid);border-radius:22px;padding:clamp(28px,5vw,48px) 24px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4);margin-top:28px}
+.pay h2{color:var(--on);font-weight:500;margin-bottom:.3em}
+.pay .tag{color:var(--sand);margin-bottom:26px}
+.pay small{display:block;max-width:34rem;margin:22px auto 0;opacity:.8;font-size:.88rem;line-height:1.5}
+.note{margin:16px 0 0;color:var(--gold);font-size:.92rem}
+
+/* цитати */
+.voices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.voices li{background:rgba(0,0,0,.2);border-radius:16px;padding:22px;font-style:italic}
+
+/* не про */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.no li{padding:10px 0;border-bottom:1px solid var(--line-l);text-decoration:line-through;text-decoration-color:var(--clay);color:var(--ink-soft)}
+.card h3{margin-bottom:12px}
+
+/* відгуки */
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.reviews figure{margin:0;background:var(--deep);border-radius:16px;padding:22px}
+.reviews blockquote{margin:0}
+.reviews figcaption{margin-top:12px;font-size:.85rem;color:var(--sand)}
+
+/* авторка */
+.author{display:grid;grid-template-columns:36% 1fr;gap:clamp(20px,4vw,40px);align-items:center}
+.photo{border-radius:16px;overflow:hidden;aspect-ratio:4/5}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.hello{color:var(--ink-soft);font-weight:700;text-transform:uppercase;margin:0}
+.author h2{margin-bottom:.8em}
+.why{border-left:1px solid var(--line-d);padding-left:20px;margin-top:36px}
+.why p:last-child{color:var(--sand);margin:0}
+
+/* питання */
+.faq{border-top:1px solid var(--line-d)}
+.faq details{border-bottom:1px solid var(--line-d)}
+.faq summary{display:flex;justify-content:space-between;gap:24px;padding:17px 0;cursor:pointer;list-style:none;font-size:1.05rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.5rem;line-height:1;flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{opacity:.85;max-width:46rem}
+.faq details p:last-child{padding-bottom:8px}
+
+/* фінал */
+.final .choice{font-size:clamp(1.15rem,2.4vw,1.45rem);font-weight:500;max-width:30rem;margin:26px auto 30px}
+
+footer{background:var(--deep);font-size:.88rem;padding:30px 0 44px;text-align:center}
+footer nav{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+footer p{opacity:.75;margin:0 0 6px}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;min-height:0;text-align:center}
+  .hero-img{order:-1;min-height:0;height:72vw;max-height:460px}
+  .hero-img img{object-position:45% 22%}
+  .hero-img::before{background:linear-gradient(0deg,var(--base),rgba(43,45,32,0) 35%)}
+  .hero-txt{justify-self:center;padding-top:20px}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .pairs,.voices,.reviews{grid-template-columns:1fr}
+  .spheres,.two{grid-template-columns:1fr;gap:0}
+  .two > div + div{margin-top:28px}
+  .step{grid-template-columns:1fr}
+  .art{display:none}
+  .rows li{align-items:flex-start}
+  .rows li::before{margin-top:.5em}
+  .author{grid-template-columns:1fr}
+  .photo{aspect-ratio:1;max-width:320px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .buy{transition:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<section class="hero" id="top">
+  <div class="hero-txt">
+    <p class="kicker">Мінікурс від психологині. 5 лекцій</p>
+    <p class="name">Перезавантаження стосунків</p>
+    <p class="sub">Близькість без претензій</p>
+    <h1>Ми переїхали разом, але стали далі один від одного</h1>
+    <p class="lead">Зрозумійте, що змінилося у ваших стосунках після переїзду, побачте, чого вам насправді не вистачає, і зробіть перші кроки до змін.</p>
+    <p class="about">Ви розберетеся в причинах дистанції, побачите потреби за претензіями, навчитеся говорити про важливе без взаємних звинувачень і зрозумієте, що можете змінити вже зараз.</p>
+    <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+    <a class="buy" href="#kupyty">Купити курс</a>
+    <p class="inside">5 лекцій + практичні вправи + робочий зошит</p>
+  </div>
+  <div class="hero-img"><img src="img/hero.jpg" alt="Наталя Коваленко, психологиня, авторка курсу" width="880" height="853"></div>
+</section>
+
+<section class="band g1">
+  <div class="wrap">
+    <div class="card">
+      <h2 class="center">Цей курс для вас, якщо після переїзду:</h2>
+      <ul class="rows">
+        <li><span>ви частіше <b>дратуєтеся одне на одного</b></span></li>
+        <li><span>розмовляєте переважно про <b>побут, дітей, роботу та гроші</b></span></li>
+        <li><span>стало менше <b>тепла, уваги й дотиків</b></span></li>
+        <li><span>сексуальна близькість <b>відійшла на другий план</b></span></li>
+        <li><span>кожен втомлений і ніби <b>живе у своєму світі</b></span></li>
+        <li><span>вам бракує підтримки, але розмова про це <b>знову закінчується сваркою</b></span></li>
+        <li><span>ви почуваєтеся <b>самотньою навіть поруч із партнером</b></span></li>
+      </ul>
+      <p class="aside">«Що з нами сталося?»</p>
+    </div>
+    <div class="strip">5 лекцій про те, що відбувається між вами і що ви можете змінити вже зараз</div>
+  </div>
+</section>
+
+<section class="band g2 on-dark">
+  <div class="wrap center">
+    <h2>Чому між вами з’являється дистанція</h2>
+    <div class="narrow">
+      <p>Разом із країною змінюється вся звична система життя. Те, що раніше підтримувало вас окремо від стосунків (робота, друзі, родина, відчуття дому), може зникнути. І тоді значно більше навантаження припадає на пару.</p>
+      <p><b>Часто проблема не в тому, що любов зникла, а в тому, що накопичуються незадоволені потреби.</b></p>
+    </div>
+    <dl class="pairs">
+      <div>
+        <dt><span>Претензія</span>«Ти зовсім мені не допомагаєш»</dt>
+        <dd><span>За цим може стояти</span>Я втомилася, і мені потрібна підтримка</dd>
+      </div>
+      <div>
+        <dt><span>Претензія</span>«Тобі взагалі не потрібна наша близькість»</dt>
+        <dd><span>За цим може стояти</span>Мені не вистачає тепла, уваги й фізичного контакту</dd>
+      </div>
+      <div>
+        <dt><span>Претензія</span>«Тобі важлива тільки робота»</dt>
+        <dd><span>За цим може стояти</span>Мені важливо відчувати, що ми команда</dd>
+      </div>
+    </dl>
+    <ol class="chain" aria-label="Як виникає претензія">
+      <li>Потреба</li><li>її незадоволення</li><li>почуття</li><li>напруга</li><li>претензія</li>
+    </ol>
+    <div class="narrow">
+      <p>Претензія викликає у партнера захист. Він захищається, ви відчуваєте ще менше контакту, напруга зростає. Так формується замкнене коло.</p>
+      <p class="sand">Тому перший крок — не знайти правильні слова, а зрозуміти, чого саме вам не вистачає.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band g3">
+  <div class="wrap">
+    <div class="card">
+      <h2>Чотири сфери, через які ми подивимося на ваші стосунки</h2>
+      <p>У курсі використовується модель чотирьох сфер позитивної психотерапії. Вона допомагає побачити стосунки цілісно, а не тільки через конфлікти.</p>
+      <ul class="spheres">
+        <li><h3>Тіло</h3><p>Сон, відпочинок, дотики, сексуальність, фізичний стан.</p><p class="q">Де тіло потребує турботи та відновлення?</p></li>
+        <li><h3>Діяльність і фінанси</h3><p>Робота, гроші, побут, професійна реалізація, розподіл відповідальності.</p><p class="q">Чи відчуваєте ви себе партнерами, а не людьми, які просто ділять обов’язки?</p></li>
+        <li><h3>Емоції та контакти</h3><p>Почуття, увага, підтримка, спілкування, друзі, родина.</p><p class="q">Чи є між вами місце для емоційного контакту?</p></li>
+        <li><h3>Сенси та майбутнє</h3><p>Цінності, мрії, плани, спільне бачення майбутнього.</p><p class="q">Чи залишилося у вас відчуття «ми» і розуміння, куди ви рухаєтеся разом?</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band g1 on-dark" id="prohrama">
+  <div class="wrap">
+    <h2 class="center">Програма курсу</h2>
+    <p class="center narrow" style="margin:0 auto 10px">П’ять відеолекцій по 20–30 хвилин. До кожної є практична вправа, яку ви виконуєте в робочому зошиті.</p>
+
+    <!-- Щоб замість номера поставити ілюстрацію: <div class="art" style="background-image:url(img/lecture-1.jpg)"></div> -->
+    <article class="step">
+      <div class="txt">
+        <p class="k">Лекція 1</p>
+        <h3>Переїзд як криза: «Що з нами відбувається?»</h3>
+        <p>Чому після переїзду стосунки можуть змінитися навіть тоді, коли любов залишилася.</p>
+        <ul>
+          <li>що таке криза та чому міграція може нею стати;</li>
+          <li>як накладаються одна на одну різні життєві кризи;</li>
+          <li>чотири сфери, через які змінюється ваша система життя.</li>
+        </ul>
+        <p class="practice">Практика: <b>«Моя карта змін»</b></p>
+      </div>
+      <div class="art" aria-hidden="true">1</div>
+    </article>
+
+    <article class="step">
+      <div class="txt">
+        <p class="k">Лекція 2</p>
+        <h3>За кожною претензією є потреба</h3>
+        <p>Чому після переїзду ми можемо стати більш вимогливими одне до одного.</p>
+        <ul>
+          <li>які потреби лежать в основі близьких стосунків;</li>
+          <li>чому одна й та сама претензія може приховувати різні потреби;</li>
+          <li>як визначити, чого насправді не вистачає саме вам.</li>
+        </ul>
+        <p class="practice">Практика: <b>«Що стоїть за моєю претензією?»</b></p>
+      </div>
+      <div class="art" aria-hidden="true">2</div>
+    </article>
+
+    <article class="step">
+      <div class="txt">
+        <p class="k">Лекція 3</p>
+        <h3>Як говорити про важливе й бути почутою</h3>
+        <p>Проста структура розмови: факт, почуття, потреба, прохання. І що робити, якщо партнер захищається, мовчить, переводить розмову в конфлікт або не готовий одразу щось змінювати.</p>
+        <p class="practice">Практика: <b>перетворюємо претензії на зрозумілі потреби та прохання</b></p>
+      </div>
+      <div class="art" aria-hidden="true">3</div>
+    </article>
+
+    <article class="step">
+      <div class="txt">
+        <p class="k">Лекція 4</p>
+        <h3>Як повернути близькість у чотирьох сферах</h3>
+        <p>Близькість — це не тільки розмови про почуття. Подивимося, як повертати контакт через тіло, діяльність, емоції та сенси, і які маленькі кроки можна зробити вже зараз.</p>
+        <p class="practice">Практика: <b>«Чотири сфери близькості»</b></p>
+      </div>
+      <div class="art" aria-hidden="true">4</div>
+    </article>
+
+    <article class="step">
+      <div class="txt">
+        <p class="k">Лекція 5</p>
+        <h3>Перезавантаження стосунків: «Що далі?»</h3>
+        <p>Повернемося до вашої карти змін: що ви зрозуміли про себе й партнера, що вже можете змінити самі, де потрібна його участь і чи достатньо вам отриманих інструментів.</p>
+        <p class="practice">Практика: <b>«Мій наступний крок»</b></p>
+      </div>
+      <div class="art" aria-hidden="true">5</div>
+    </article>
+
+    <div class="cta-row"><a class="buy" href="#kupyty">Купити курс</a></div>
+  </div>
+</section>
+
+<section class="band g2 on-dark">
+  <div class="wrap">
+    <h2 class="center">Що зміниться після курсу</h2>
+    <ul class="rows gains">
+      <li><span><b>Зрозумієте</b>, що відбувається з вами та вашими стосунками після переїзду</span></li>
+      <li><span><b>Побачите</b>, які потреби стоять за вашими претензіями та конфліктами</span></li>
+      <li><span><b>Визначите</b>, у якій із чотирьох сфер зараз найбільше бракує близькості</span></li>
+      <li><span><b>Навчитеся</b> говорити про свої почуття та потреби без звинувачень</span></li>
+      <li><span><b>Спробуєте</b> конкретні способи відновлення контакту</span></li>
+      <li><span><b>Розмежуєте</b>, що можете змінити самостійно, а де потрібна участь партнера або глибша робота</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="band g3" id="kupyty">
+  <div class="wrap">
+    <div class="card">
+      <h2>Що ви отримаєте</h2>
+      <ul class="checks">
+        <li><b>5 відеолекцій.</b> <span>По 20–30 хвилин, разом приблизно 2–2,5 години.</span></li>
+        <li><b>Практичні вправи.</b> <span>Щоб не просто слухати, а працювати зі своїми стосунками.</span></li>
+        <li><b>Робочий зошит.</b> <span>Для вправ і власних висновків.</span></li>
+        <li><b>Модель чотирьох сфер.</b> <span>Щоб бачити стосунки цілісно, а не тільки через конфлікти.</span></li>
+        <li><b>Інструменти комунікації.</b> <span>Щоб говорити про важливе без взаємних звинувачень.</span></li>
+        <li><b>Навчання у своєму темпі.</b> <span>Ви самі обираєте, коли проходити лекції та виконувати вправи.</span></li>
+      </ul>
+    </div>
+    <div class="pay">
+      <h2>Перезавантаження стосунків</h2>
+      <p class="tag">Близькість без претензій</p>
+      <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+      <a class="buy" id="payBtn" href="#kupyty">Купити курс</a>
+      <p class="note" id="payNote" hidden>Оплату ще не підключено. Сторінка працює в режимі попереднього перегляду.</p>
+      <small>Доступ до лекцій і зошита надходить одразу після оплати. Протягом 14 днів можна звернутися щодо повернення коштів, якщо курс вам не підійде.</small>
+    </div>
+  </div>
+</section>
+
+<section class="band g1 on-dark">
+  <div class="wrap">
+    <h2 class="center">Можливо, ви впізнаєте себе</h2>
+    <ul class="voices">
+      <li>«Я ніби втратила чоловіка, хоча ми досі разом».</li>
+      <li>«Ми весь час говоримо про побут, але майже не говоримо одне з одним».</li>
+      <li>«Я хочу більше уваги, але кожна моя спроба поговорити закінчується сваркою».</li>
+      <li>«Мені здається, що ми стали просто сусідами».</li>
+      <li>«Я розумію, що ми обоє втомилися, але не знаю, як повернути близькість».</li>
+      <li>«Я хочу щось змінити, навіть якщо партнер поки не готовий».</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band g2">
+  <div class="wrap">
+    <div class="card">
+      <h2>Цей курс не про те, як змусити партнера змінитися</h2>
+      <div class="two">
+        <ul class="no">
+          <li>Маніпуляції</li>
+          <li>«Правильні слова», після яких партнер стане іншим</li>
+          <li>Порятунок стосунків за п’ять лекцій</li>
+        </ul>
+        <div>
+          <h3>Він про інше</h3>
+          <ul class="checks">
+            <li>краще зрозуміти себе, партнера і те, що відбувається між вами;</li>
+            <li>побачити потреби за претензіями;</li>
+            <li>змінити те, що знаходиться у вашій зоні впливу;</li>
+            <li>зрозуміти, який наступний крок потрібен саме вашим стосункам.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ВІДГУКИ. Блок прихований, поки немає реальних відгуків.
+     Вставте справжні тексти і приберіть атрибут hidden у тегу section. -->
+<section class="band g3 on-dark" hidden>
+  <div class="wrap">
+    <h2 class="center">Що говорять жінки</h2>
+    <div class="reviews">
+      <figure><blockquote>Текст відгуку 1</blockquote><figcaption>Ім’я, країна. Формат роботи: курс / індивідуальна / парна</figcaption></figure>
+      <figure><blockquote>Текст відгуку 2</blockquote><figcaption>Ім’я, країна. Формат роботи</figcaption></figure>
+      <figure><blockquote>Текст відгуку 3</blockquote><figcaption>Ім’я, країна. Формат роботи</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="band g3 on-dark">
+  <div class="wrap">
+    <div class="card author">
+      <div class="photo"><img src="img/author.jpg" alt="Наталя Коваленко" width="460" height="575"></div>
+      <div>
+      <p class="hello">Привіт,</p>
+      <h2>я Наталя Коваленко</h2>
+      <p>Я <b>практикуюча психологиня, психотерапевтка в методі позитивної психотерапії</b>. Знаю, як часто за конфліктами стоїть не відсутність любові, а незрозумілі потреби, накопичена втома, образи та невміння говорити про важливе.</p>
+      <ul class="checks">
+        <li>У практиці з 2015 року</li>
+        <li>Теми роботи: самооцінка, близькість, стосунки жінок і пар</li>
+        <li>Сотні жінок у індивідуальній роботі</li>
+        <li>Десятки пар у парній терапії</li>
+      </ul>
+      </div>
+    </div>
+    <div class="why">
+      <p>У своїй роботі я бачу багато жінок і пар, яким на першому етапі потрібні не довгі години психотерапії, а розуміння того, що з ними відбувається, і конкретні інструменти, які можна застосовувати вже зараз.</p>
+      <p>Для когось цього буде достатньо, щоб самостійно почати змінювати взаємодію. А якщо за труднощами стоять глибші особисті чи парні процеси, курс допоможе їх побачити та зрозуміти, у якому напрямку рухатися далі.</p>
+      <p>Саме тому я створила цей курс.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band g1">
+  <div class="wrap">
+    <div class="card">
+      <h2>Коли курсу може бути недостатньо</h2>
+      <p>Якщо у стосунках є серйозні невирішені конфлікти, тривалі образи, повторювані деструктивні сценарії або глибокі особисті труднощі, вони потребують індивідуальної чи парної психотерапії.</p>
+      <p style="margin:0">У такому випадку курс може стати першим кроком до глибшої роботи.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band g2 on-dark">
+  <div class="wrap">
+    <h2 class="center">Найчастіші запитання</h2>
+    <div class="faq">
+      <details>
+        <summary>Чи достатньо цього курсу, щоб змінити щось у наших стосунках?</summary>
+        <p>Курс є самостійним продуктом: ви отримаєте пояснення того, що відбувається, інструменти та практичні вправи. Для когось цього справді достатньо, щоб почати змінювати взаємодію.</p>
+        <p>Якщо ж за труднощами стоять глибші психологічні процеси, може знадобитися подальша індивідуальна або парна робота.</p>
+      </details>
+      <details>
+        <summary>Чи потрібно проходити курс разом із партнером?</summary>
+        <p>Ні, ви можете проходити його самостійно. Багато інструментів можна застосовувати, починаючи зі своїх реакцій, потреб і способу комунікації. Але якщо обоє партнерів готові працювати над взаємодією, можливості для змін значно ширші.</p>
+      </details>
+      <details>
+        <summary>А якщо ми вже давно маємо проблеми у стосунках?</summary>
+        <p>Курс допоможе розібратися, що відбувається та що підтримує проблему. Якщо труднощі існували ще до переїзду або пов’язані з глибокими образами, повторюваними сценаріями чи особистим досвідом, одного курсу може бути недостатньо.</p>
+      </details>
+      <details>
+        <summary>Чи підійде курс, якщо партнер не хоче нічого змінювати?</summary>
+        <p>Так, ви можете почати із себе: краще зрозуміти свої потреби, реакції та зону власного впливу. Водночас стосунки створюють двоє людей, тому глибокі та стійкі зміни зазвичай потребують участі обох.</p>
+      </details>
+      <details>
+        <summary>Скільки часу займає проходження?</summary>
+        <p>П’ять лекцій по 20–30 хвилин, загалом приблизно 2–2,5 години плюс час на практичні вправи. Ви проходите курс у власному темпі.</p>
+      </details>
+      <details>
+        <summary>Чи можу я повернути кошти?</summary>
+        <p>Так. Протягом 14 днів після покупки ви можете звернутися щодо повернення коштів, якщо зрозумієте, що курс вам не підходить. Повернення здійснюється відповідно до <a href="refund.html">умов повернення коштів</a>.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="band g3 on-dark final center">
+  <div class="wrap">
+    <h2>Іноді для змін потрібні не роки розмов</h2>
+    <p class="narrow">Іноді потрібен момент, коли ви нарешті розумієте, що насправді відбувається між вами. Буває, що цього розуміння та кількох нових інструментів достатньо, щоб почати рухатися одне до одного.</p>
+    <p class="choice">Ви можете й далі просто жити поруч. А можете почати повертати ваше «ми».</p>
+    <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+    <a class="buy" href="#kupyty">Купити курс</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <nav aria-label="Документи">
+      <a href="privacy.html">Політика конфіденційності</a>
+      <a href="oferta.html">Публічна оферта</a>
+      <a href="refund.html">Умови повернення коштів</a>
+    </nav>
+    <p id="legal" hidden></p>
+    <p>© 2026 Наталя Коваленко. Усі права захищені.</p>
+  </div>
+</footer>
+
+<script>
+/* ===== НАЛАШТУВАННЯ: змінюйте тільки цей блок ===== */
+const CONFIG = {
+  price:       '',  // наприклад '990 грн'. Порожньо = ціна не показується
+  oldPrice:    '',  // стара ціна, наприклад '1500 грн'. Вказуйте, лише якщо курс справді так продавався
+  payUrl:      '',  // посилання на оплату WayForPay (кнопка або інвойс із кабінету мерчанта)
+  legal:       ''   // рядок із даними ФОП і контактами для підвалу
+};
+/* ================================================== */
+
+if (CONFIG.price) {
+  document.querySelectorAll('[data-pricebox]').forEach(box => {
+    box.querySelector('[data-price]').textContent = CONFIG.price;
+    box.querySelector('[data-old]').textContent = CONFIG.oldPrice || '';
+    box.hidden = false;
+  });
+}
+
+const payBtn = document.getElementById('payBtn');
+if (CONFIG.payUrl) {
+  payBtn.href = CONFIG.payUrl;
+} else {
+  payBtn.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('payNote').hidden = false;
+  });
+}
+
+if (CONFIG.legal) {
+  const legal = document.getElementById('legal');
+  legal.textContent = CONFIG.legal;
+  legal.hidden = false;
+}
+
+</script>
+</body>
+</html>
