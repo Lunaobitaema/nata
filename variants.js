@@ -7,7 +7,9 @@
     ['v3.html', 'Лист'],
     ['v4.html', 'Маршрут'],
     ['v5.html', 'Зошит'],
-    ['v6.html', 'Плакат']
+    ['v6.html', 'Плакат'],
+    ['v7.html', 'Диван'],
+    ['v8.html', 'Зближення']
   ];
   var cur = location.pathname.split('/').pop() || 'index.html';
   var H = 48;
@@ -22,7 +24,8 @@
     '#vbar a[aria-current]{background:#fff;color:#111}' +
     '#vbar a b{font-weight:700}#vbar a i{font-style:normal;font-weight:500;margin-left:6px}' +
     '@media (max-width:900px){#vbar a i{display:none}#vbar a[aria-current] i{display:inline}}' +
-    '@media (max-width:520px){#vbar span{display:none}#vbar{gap:6px}#vbar a{min-width:34px;padding:0 8px}}';
+    '@media (max-width:1100px){#vbar a i{display:none}#vbar a[aria-current] i{display:inline}}' +
+    '@media (max-width:560px){#vbar span{display:none}#vbar{gap:4px}#vbar a{min-width:30px;padding:0 7px}}';
   var st = document.createElement('style');
   st.textContent = css;
   document.head.appendChild(st);
