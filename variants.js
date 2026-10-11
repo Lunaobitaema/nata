@@ -10,7 +10,8 @@
     ['v6.html', 'Плакат'],
     ['v7.html', 'Диван'],
     ['v8.html', 'Зближення'],
-    ['v9.html', 'Зорі']
+    ['v9.html', 'Зорі'],
+    ['v10.html', 'Фото']
   ];
   var cur = location.pathname.split('/').pop() || 'index.html';
   var H = 48;
@@ -26,7 +27,7 @@
     '#vbar a b{font-weight:700}#vbar a i{font-style:normal;font-weight:500;margin-left:6px}' +
     '@media (max-width:900px){#vbar a i{display:none}#vbar a[aria-current] i{display:inline}}' +
     '@media (max-width:1100px){#vbar a i{display:none}#vbar a[aria-current] i{display:inline}}' +
-    '@media (max-width:560px){#vbar span{display:none}#vbar{gap:3px}#vbar a{min-width:28px;padding:0 6px}}';
+    '@media (max-width:560px){#vbar span{display:none}#vbar{gap:2px}#vbar a{min-width:26px;padding:0 5px}}';
   var st = document.createElement('style');
   st.textContent = css;
   document.head.appendChild(st);
