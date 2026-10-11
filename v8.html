@@ -241,11 +241,24 @@ footer p{opacity:.75;margin:0 0 6px}
 }
 
 /* ===== варіант 8: нерухомий диван, пара зближується під час гортання ===== */
-:root{--sh:clamp(200px,42vh,400px);--veil:rgba(36,38,26,.92)}
+:root{--sh:clamp(200px,42vh,400px);--veil:rgba(36,38,26,.62)}
 body{background:var(--base) radial-gradient(120% 60% at 50% 100%,#414428,var(--base) 70%) fixed}
 #stage{position:fixed;left:0;right:0;bottom:0;height:var(--sh);margin:0;z-index:0;will-change:transform}
 main,footer{position:relative;z-index:1}
 .g1,.g2,.g3{background:var(--veil)}
+/* напівпрозорі блоки: сцену видно й під ними */
+.on-dark,.hero-txt,.final,footer{text-shadow:0 1px 3px rgba(18,19,12,.95),0 0 14px rgba(18,19,12,.9)}
+.card,.rail li,.buy,.pay,.tg{text-shadow:none}
+.card{background:rgba(244,239,231,.84)}
+.rail li{background:rgba(244,239,231,.88)}
+.pay{background:rgba(75,77,44,.82)}
+.strip{background:rgba(27,28,20,.66)}
+.pairs>div,.voices li{background:rgba(18,19,12,.42)}
+/* режим фотографій: вмикається сам, якщо в папці img є couple-1.jpg ... couple-5.jpg */
+#photos{position:fixed;inset:0;z-index:0;display:none}
+#photos img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;opacity:0}
+body.photo #photos{display:block}
+body.photo #stage{display:none}
 .hero{background:none;overflow:visible;min-height:calc(100vh - var(--vb,0px));padding-bottom:calc(var(--sh) + 10px)}
 .win{height:calc(var(--sh) + 30px);background:linear-gradient(var(--veil),rgba(36,38,26,0) 18%,rgba(36,38,26,0) 82%,var(--veil))}
 .band.final{background:linear-gradient(var(--veil),rgba(36,38,26,0) 34%);padding-bottom:calc(var(--sh) + 24px)}
@@ -255,6 +268,7 @@ main,footer{position:relative;z-index:1}
 </style>
 </head>
 <body>
+<div id="photos" aria-hidden="true"></div>
 <div class="stage" id="stage"></div>
 <main>
 <section class="hero" id="top">
@@ -605,10 +619,28 @@ if (CONFIG.legal) {
 /* сцена: t = 0 угорі сторінки, t = 1 унизу */
 const stageEl = document.getElementById('stage'), scene = Scene(stageEl), foot = document.querySelector('footer');
 let tick = false;
+
+/* Фото замість малюнка. Покладіть у папку img п'ять кадрів, знятих з однієї точки:
+   couple-1.jpg (сидять нарізно) ... couple-5.jpg (обіймаються). Сторінка підхопить їх сама. */
+const PHOTOS = 5, photoBox = document.getElementById('photos');
+let photos = [];
+Promise.all(Array.from({ length: PHOTOS }, (_, i) => new Promise((ok, no) => {
+  const im = new Image(); im.alt = ''; im.onload = () => ok(im); im.onerror = no; im.src = 'img/couple-' + (i + 1) + '.jpg';
+}))).then(list => {
+  photos = list; list.forEach(im => photoBox.appendChild(im));
+  document.body.classList.add('photo'); upd();
+}).catch(() => {});
+function fade(t) {            /* кожен наступний кадр плавно проявляється поверх попереднього */
+  const x = t * (PHOTOS - 1);
+  photos.forEach((im, i) => { im.style.opacity = Math.max(0, Math.min(1, x - (i - 1))); });
+}
+
 function upd() {
   tick = false;
   const max = document.documentElement.scrollHeight - innerHeight - foot.offsetHeight;
-  scene.draw(max > 0 ? scrollY / max : 0);
+  const t = max > 0 ? Math.min(1, scrollY / max) : 0;
+  if (photos.length) { fade(t); return; }
+  scene.draw(t);
   const over = Math.max(0, innerHeight - foot.getBoundingClientRect().top);   /* підвал підсуває сцену вгору */
   stageEl.style.transform = over ? 'translateY(' + (-over) + 'px)' : '';
 }
