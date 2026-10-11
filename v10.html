@@ -242,9 +242,23 @@ footer p{opacity:.75;margin:0 0 6px}
 
 /* ===== варіант 10: фотографії ===== */
 .deco{display:none}
-.hero{background:linear-gradient(rgba(43,45,32,.78),rgba(27,28,20,.93)),url("https://images.unsplash.com/photo-1758524944637-a515455f95ec?auto=format&fit=crop&w=1800&h=1100&q=70") center/cover}
+:root{--base:#36452C;--mid:#566B3B;--deep:#283420;--line-d:rgba(242,236,226,.24)}
+.hero{background:linear-gradient(rgba(54,69,44,.72),rgba(40,52,32,.9)),url("https://images.unsplash.com/photo-1758524944637-a515455f95ec?auto=format&fit=crop&w=1800&h=1100&q=70") center/cover}
 .hero-txt{padding-bottom:clamp(40px,7vw,80px)}
-.band.final{padding-bottom:clamp(48px,8vw,90px);background:linear-gradient(rgba(27,28,20,.86),rgba(43,45,32,.9)),url("https://images.unsplash.com/photo-1758522483509-c9744843d7fd?auto=format&fit=crop&w=1800&h=1000&q=70") center/cover}
+.band.final{padding-bottom:clamp(48px,8vw,90px);background:linear-gradient(rgba(40,52,32,.84),rgba(54,69,44,.9)),url("https://images.unsplash.com/photo-1758522483509-c9744843d7fd?auto=format&fit=crop&w=1800&h=1000&q=70") center/cover}
+.pic{display:none}
+.author .photo img{object-position:50% 50%}
+/* приглушені фото у сферах і програмі */
+.spheres li img,.rail li>img{filter:saturate(.45) sepia(.18) brightness(.92) contrast(.95)}
+/* телефон: фото пари показуємо цілим кадром під текстом, а не фоном під ним */
+@media (max-width:760px){
+  .hero{background:linear-gradient(var(--mid),var(--base) 60%)}
+  .hero-txt{padding-bottom:22px}
+  .band.final{background:linear-gradient(var(--mid),var(--base));padding-bottom:0}
+  .pic{display:block;width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;filter:saturate(.8);-webkit-mask-image:linear-gradient(transparent,#000 22%);mask-image:linear-gradient(transparent,#000 22%)}
+  .pic--hero{background-image:url("https://images.unsplash.com/photo-1758524944637-a515455f95ec?auto=format&fit=crop&w=900&h=506&q=70")}
+  .pic--final{background-image:url("https://images.unsplash.com/photo-1758522483509-c9744843d7fd?auto=format&fit=crop&w=900&h=506&q=70");margin-top:26px}
+}
 .th{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 2px rgba(207,187,162,.55)}
 .rows.pics li{gap:18px;padding:12px 0}
 .rows.pics li::before{content:none}
@@ -273,6 +287,7 @@ footer a{color:inherit}
     <a class="buy" href="#kupyty">Купити курс</a>
     <p class="inside">5 лекцій + практичні вправи + робочий зошит</p>
   </div>
+  <div class="pic pic--hero" aria-hidden="true"></div>
 </section>
 
 <section class="band g1">
@@ -344,7 +359,7 @@ footer a{color:inherit}
 <section class="band g1 on-dark">
   <div class="wrap">
     <div class="card author">
-      <div class="photo"><img src="img/author.jpg" alt="Наталя Коваленко" width="500" height="625"></div>
+      <div class="photo"><img src="img/author-2.jpg" alt="Наталя Коваленко" width="720" height="900"></div>
       <div>
       <p class="hello">Привіт,</p>
       <h2>я Наталя Коваленко</h2>
@@ -547,6 +562,7 @@ footer a{color:inherit}
     <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
     <a class="buy" href="#kupyty">Купити курс</a>
   </div>
+  <div class="pic pic--final" aria-hidden="true"></div>
 </section>
 
 </main>
