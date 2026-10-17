@@ -1,0 +1,13 @@
+// Налаштування Cloudflare Workers.
+// Зараз Worker лише віддає статичні файли сайту з кореня репозиторію.
+// Пізніше тут з'явиться "main" з кодом оплати WayForPay і Telegram-бота.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "natalyakovalenko",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}
