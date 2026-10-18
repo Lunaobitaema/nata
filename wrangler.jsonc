@@ -8,6 +8,8 @@
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
   "preview_urls": false,
+  // не стирати змінні, додані вручну в панелі Cloudflare, під час публікації
+  "keep_vars": true,
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
