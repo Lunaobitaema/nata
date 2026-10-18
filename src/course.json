@@ -6,7 +6,7 @@
   "contact": "https://t.me/natalyakovalenko_bot",
 
   "prices": {
-    "uah": { "amount": 440, "currency": "UAH", "label": "440 грн" },
+    "uah": { "amount": 490, "currency": "UAH", "label": "490 грн" },
     "eur": { "amount": 9, "currency": "EUR", "label": "9 €" }
   },
 

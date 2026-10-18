@@ -296,7 +296,7 @@ footer a{color:inherit}
     <p class="lead">Зрозумійте, що змінилося у ваших стосунках після переїзду, побачте, чого вам насправді не вистачає, і зробіть перші кроки до змін.</p>
     <p class="about">Ви розберетеся в причинах дистанції, побачите потреби за претензіями, навчитеся говорити про важливе без взаємних звинувачень і зрозумієте, що можете змінити вже зараз.</p>
     <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
-    <a class="buy" href="#kupyty">Купити курс</a>
+    <a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a>
     <p class="inside">5 лекцій + практичні вправи + робочий зошит</p>
   </div>
   <div class="pic pic--hero" aria-hidden="true"></div>
@@ -405,7 +405,7 @@ footer a{color:inherit}
     <li><img src="https://images.unsplash.com/photo-1790750557554-4caa42e6707a?auto=format&fit=crop&w=800&h=480&q=70" alt="" width="800" height="480" loading="lazy"><p class="k">Лекція 5</p><h3>Перезавантаження стосунків: «Що далі?»</h3><p>Що ви зрозуміли про себе й партнера, що вже можете змінити самі, де потрібна його участь і чи достатньо вам отриманих інструментів.</p><p class="pr">Практика: <b>«Мій наступний крок»</b></p></li>
   </ol>
   <div class="railnav"><button type="button" data-rail="-1" aria-label="Попередня лекція">←</button><span>Гортайте вбік</span><button type="button" data-rail="1" aria-label="Наступна лекція">→</button></div>
-  <div class="wrap"><div class="cta-row"><a class="buy" href="#kupyty">Купити курс</a></div></div>
+  <div class="wrap"><div class="cta-row"><a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a></div></div>
 </section>
 
 <section class="band g3" id="yak">
@@ -464,7 +464,7 @@ footer a{color:inherit}
       <p class="tag">Близькість без претензій</p>
       <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
       <div class="paybtns">
-        <a class="buy" href="/pay/uah" data-pay="uah">Купити курс <span>оплата карткою українського банку</span></a>
+        <a class="buy" href="/pay/uah" data-pay="uah">Оплатити</a>
         <a class="buy buy--alt" href="/pay/eur" data-pay="eur" hidden>Оплатити європейською карткою <span>9 €</span></a>
       </div>
       <p class="note" id="payNote" hidden>Оплату ще не підключено. Сторінка працює в режимі попереднього перегляду.</p>
@@ -575,7 +575,7 @@ footer a{color:inherit}
     <p class="narrow">Іноді потрібен момент, коли ви нарешті розумієте, що насправді відбувається між вами. Буває, що цього розуміння та кількох нових інструментів достатньо, щоб почати рухатися одне до одного.</p>
     <p class="choice">Ви можете й далі просто жити поруч. А можете почати повертати ваше «ми».</p>
     <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
-    <a class="buy" href="#kupyty">Купити курс</a>
+    <a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a>
   </div>
   <div class="pic pic--final" aria-hidden="true"></div>
 </section>
@@ -598,7 +598,7 @@ footer a{color:inherit}
 <script>
 /* ===== НАЛАШТУВАННЯ: змінюйте тільки цей блок ===== */
 const CONFIG = {
-  price:       '440 грн',  // наприклад '990 грн'. Порожньо = ціна не показується
+  price:       '490 грн',  // наприклад '990 грн'. Порожньо = ціна не показується
   oldPrice:    '',  // стара ціна, наприклад '1500 грн'. Вказуйте, лише якщо курс справді так продавався
   legal:       ''   // рядок із даними ФОП і контактами для підвалу
 };
@@ -620,6 +620,8 @@ fetch('/api/pay-methods').then(r => r.ok ? r.json() : null).then(m => {
     if (a.dataset.pay === 'eur') { a.hidden = true; return; }   // друга кнопка зʼявиться, коли підключать оплату в євро
     a.setAttribute('aria-disabled', 'true'); a.removeAttribute('href');
   });
+  // кнопки «Купити курс» у різних блоках ведуть одразу на оплату; якщо оплату вимкнено — до блоку з ціною
+  document.querySelectorAll('[data-pay-link]').forEach(a => { if (!m[a.dataset.payLink]) a.href = '#kupyty'; });
   if (!m.uah && !m.eur) document.getElementById('payNote').hidden = false;
 }).catch(() => { document.getElementById('payNote').hidden = false; });
 
