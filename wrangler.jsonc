@@ -26,7 +26,9 @@
     "SITE_URL": "https://natalyakovalenko.com.ua",
     "BOT_USERNAME": "natalyakovalenko_bot",
     // "1" = тестова оплата WayForPay (гроші не списуються). Для бойових оплат видалити цей рядок.
-    "WFP_TEST": "1"
+    "WFP_TEST": "1",
+    // "1" = показати другу кнопку — оплата європейською карткою в євро (потрібен мерчант WFP_EUR_*)
+    "PAY_EUR": "0"
   },
   "observability": { "enabled": true }
 }

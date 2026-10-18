@@ -16,6 +16,7 @@
 //   ADMIN_CODE         код, яким адміністратор підключається в боті: /admin КОД
 //   WFP_UAH_ACCOUNT, WFP_UAH_SECRET   мерчант WayForPay для гривні
 //   WFP_EUR_ACCOUNT, WFP_EUR_SECRET   мерчант WayForPay для євро
+//   PAY_EUR            "1" — показати кнопку оплати в євро (за замовчуванням вимкнено)
 //   WFP_TEST           "1" — оплати через тестовий мерчант WayForPay (гроші не списуються)
 //   RESEND_API_KEY     (необов'язково) ключ Resend для листа з посиланням на курс
 //   MAIL_FROM          (необов'язково) адреса відправника, напр. "Наталя Коваленко <kurs@natalyakovalenko.com.ua>"
@@ -152,7 +153,11 @@ const webhookSecret = async (env) => (await hmacSha256(env.APP_SECRET || 'x', 't
 
 // ───────────────────────── WayForPay ─────────────────────────
 
+// Оплата в євро вмикається змінною PAY_EUR = "1" (і мерчантом WFP_EUR_*). Поки вимкнено — кнопки на сайті немає.
+const eurEnabled = (env) => env.PAY_EUR === '1';
+
 function merchant(env, method) {
+  if (method === 'eur' && !eurEnabled(env)) return null;
   if (env.WFP_TEST === '1') return { account: WFP_TEST_ACCOUNT, secret: WFP_TEST_SECRET, test: true };
   if (method === 'uah' && env.WFP_UAH_ACCOUNT && env.WFP_UAH_SECRET) return { account: env.WFP_UAH_ACCOUNT, secret: env.WFP_UAH_SECRET };
   if (method === 'eur' && env.WFP_EUR_ACCOUNT && env.WFP_EUR_SECRET) return { account: env.WFP_EUR_ACCOUNT, secret: env.WFP_EUR_SECRET };

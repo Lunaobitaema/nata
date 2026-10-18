@@ -276,6 +276,7 @@ footer a{color:inherit}
 @media (min-width:1100px){.hero-txt{background:none}}
 @media (max-width:760px){.th{width:56px;height:56px}.rows.pics li{align-items:center}}
 
+.paybtns [hidden]{display:none!important}
 .paybtns{display:flex;flex-direction:column;gap:12px;align-items:stretch;max-width:420px;margin:0 auto}
 .paybtns .buy{text-align:center;padding:1em 1.4em;line-height:1.35}
 .paybtns .buy span{display:block;font-size:.72rem;letter-spacing:.08em;opacity:.7;margin-top:2px}
@@ -463,8 +464,8 @@ footer a{color:inherit}
       <p class="tag">Близькість без претензій</p>
       <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
       <div class="paybtns">
-        <a class="buy" href="/pay/uah" data-pay="uah">Оплатити українською карткою <span>440 грн</span></a>
-        <a class="buy buy--alt" href="/pay/eur" data-pay="eur">Оплатити європейською карткою <span>9 €</span></a>
+        <a class="buy" href="/pay/uah" data-pay="uah">Купити курс <span>оплата карткою українського банку</span></a>
+        <a class="buy buy--alt" href="/pay/eur" data-pay="eur" hidden>Оплатити європейською карткою <span>9 €</span></a>
       </div>
       <p class="note" id="payNote" hidden>Оплату ще не підключено. Сторінка працює в режимі попереднього перегляду.</p>
       <small>Одразу після оплати вам прийде привітання в Telegram. Перша відеолекція надійде наступного дня об 11:00 (за Києвом), далі щодня по одній, п’ять днів поспіль. Протягом 14 днів можна звернутися щодо повернення коштів, якщо курс вам не підійде.</small>
@@ -597,7 +598,7 @@ footer a{color:inherit}
 <script>
 /* ===== НАЛАШТУВАННЯ: змінюйте тільки цей блок ===== */
 const CONFIG = {
-  price:       '9 €',  // наприклад '990 грн'. Порожньо = ціна не показується
+  price:       '440 грн',  // наприклад '990 грн'. Порожньо = ціна не показується
   oldPrice:    '',  // стара ціна, наприклад '1500 грн'. Вказуйте, лише якщо курс справді так продавався
   legal:       ''   // рядок із даними ФОП і контактами для підвалу
 };
@@ -615,7 +616,9 @@ if (CONFIG.price) {
 fetch('/api/pay-methods').then(r => r.ok ? r.json() : null).then(m => {
   if (!m) throw 0;
   document.querySelectorAll('[data-pay]').forEach(a => {
-    if (!m[a.dataset.pay]) { a.setAttribute('aria-disabled', 'true'); a.removeAttribute('href'); }
+    if (m[a.dataset.pay]) { a.hidden = false; return; }
+    if (a.dataset.pay === 'eur') { a.hidden = true; return; }   // друга кнопка зʼявиться, коли підключать оплату в євро
+    a.setAttribute('aria-disabled', 'true'); a.removeAttribute('href');
   });
   if (!m.uah && !m.eur) document.getElementById('payNote').hidden = false;
 }).catch(() => { document.getElementById('payNote').hidden = false; });
