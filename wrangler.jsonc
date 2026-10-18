@@ -1,15 +1,28 @@
 // Налаштування Cloudflare Workers.
-// Зараз Worker лише віддає статичні файли сайту з кореня репозиторію.
-// Пізніше тут з'явиться "main" з кодом оплати WayForPay і Telegram-бота.
+// Статичні сторінки віддаються з кореня репозиторію, а src/worker.js обробляє
+// оплату WayForPay, Telegram-бота, розклад лекцій та адмінку (/admin).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "natalyakovalenko",
+  "main": "src/worker.js",
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
   "preview_urls": false,
   "assets": {
     "directory": "./",
+    "binding": "ASSETS",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "none"
-  }
+  },
+  // база учасниць (Cloudflare D1). Створюється автоматично при першій публікації.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "natalyakovalenko-db" }
+  ],
+  // розсилка лекцій: перевірка кожні 10 хвилин, відправка о 11:00 за Києвом
+  "triggers": { "crons": ["*/10 * * * *"] },
+  "vars": {
+    "SITE_URL": "https://natalyakovalenko.com.ua",
+    "BOT_USERNAME": "natalyakovalenko_bot"
+  },
+  "observability": { "enabled": true }
 }

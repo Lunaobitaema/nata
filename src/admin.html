@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Адмінка — Наталя Коваленко</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#F4EFE7;--card:#fff;--ink:#1B1C14;--muted:#6b6a5e;--line:#e3dccf;--olive:#4B4D2C;--deep:#2B2D20;--ok:#3d7a3a;--warn:#a8741a;--bad:#a33a2c;--blue:#2f5f8a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--deep);color:#F4EFE7;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+header b{font-weight:600}header .sp{flex:1}
+header button{background:transparent;color:#F4EFE7;border:1px solid rgba(244,239,231,.4);border-radius:8px;padding:6px 10px;font:inherit;cursor:pointer}
+nav{display:flex;gap:4px;padding:10px 16px 0;overflow-x:auto;max-width:1100px;margin:0 auto}
+nav button{border:0;background:transparent;padding:10px 14px;border-radius:10px 10px 0 0;font:600 14px system-ui,sans-serif;color:var(--muted);cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{background:var(--card);color:var(--ink)}
+main{max-width:1100px;margin:0 auto;padding:0 16px 40px}
+.panel{background:var(--card);border-radius:0 12px 12px 12px;padding:18px;min-height:200px}
+h2{font-size:1.05rem;margin:22px 0 10px}h2:first-child{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat .v{font-size:1.5rem;font-weight:700;line-height:1.2}
+.stat .l{font-size:.82rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;font-size:.75rem;font-weight:600;padding:2px 8px;border-radius:999px;background:#eee;white-space:nowrap}
+.b-ok{background:#e1efdd;color:var(--ok)}.b-warn{background:#f6ead2;color:var(--warn)}.b-bad{background:#f3dcd8;color:var(--bad)}.b-blue{background:#dde8f2;color:var(--blue)}.b-test{background:#fff3c4;color:#7a5c00}
+.muted{color:var(--muted)}.small{font-size:.82rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+textarea{width:100%;min-height:70px}
+.btn{font:600 14px system-ui,sans-serif;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--olive);color:#fff}
+.btn.sec{background:#efe9de;color:var(--ink)}.btn.danger{background:var(--bad)}
+.btn:disabled{opacity:.5;cursor:default}
+.client{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.client .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.client .name{font-weight:600}
+.client .meta{font-size:.85rem;color:var(--muted);margin-top:4px}
+.client details{margin-top:8px}.client summary{cursor:pointer;color:var(--blue);font-size:.9rem}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.actions .btn{padding:7px 11px;font-size:13px}
+.progress{display:inline-flex;gap:3px;vertical-align:middle}
+.progress i{width:14px;height:6px;border-radius:3px;background:var(--line)}.progress i.on{background:var(--ok)}
+.login{max-width:380px;margin:12vh auto;background:var(--card);border-radius:16px;padding:28px;text-align:center}
+.login input{width:100%;font-size:1.4rem;text-align:center;letter-spacing:.3em;margin:12px 0}
+.msg{margin-top:10px;font-size:.9rem}.msg.err{color:var(--bad)}.msg.ok{color:var(--ok)}
+.copy{font-family:ui-monospace,monospace;font-size:.8rem;background:#f6f2ea;border-radius:6px;padding:6px 8px;word-break:break-all;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--deep);color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:20}
+[hidden]{display:none!important}
+@media (max-width:640px){.panel{padding:14px}th.hide,td.hide{display:none}}
+</style>
+</head>
+<body>
+
+<section class="login" id="login" hidden>
+  <h1 style="font-size:1.2rem;margin:0 0 6px">Вхід в адмінку</h1>
+  <p class="muted small">Код входу прийде в Telegram від бота <b>@natalyakovalenko_bot</b> усім адміністраторам.</p>
+  <button class="btn" id="reqCode" style="width:100%">Надіслати код у Telegram</button>
+  <form id="codeForm" hidden>
+    <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" aria-label="Код із Telegram">
+    <button class="btn" style="width:100%">Увійти</button>
+  </form>
+  <div class="msg" id="loginMsg"></div>
+</section>
+
+<div id="app" hidden>
+  <header><b>Адмінка курсу</b><span class="sp"></span><button id="logout">Вийти</button></header>
+  <nav role="tablist">
+    <button role="tab" data-tab="overview" aria-selected="true">Огляд</button>
+    <button role="tab" data-tab="clients">Учасниці</button>
+    <button role="tab" data-tab="add">Додати вручну</button>
+    <button role="tab" data-tab="system">Система</button>
+  </nav>
+  <main>
+    <div class="panel" id="tab-overview">
+      <h2>Продажі</h2>
+      <div class="grid" id="stats"></div>
+      <h2>Проходження курсу</h2>
+      <div class="grid" id="stats2"></div>
+      <h2>Оплати за 30 днів</h2>
+      <table><thead><tr><th>Дата</th><th class="num">Оплат</th><th class="num">₴</th><th class="num">€</th></tr></thead><tbody id="days"></tbody></table>
+      <p class="muted small">Тестові оплати в статистиці не враховуються.</p>
+    </div>
+
+    <div class="panel" id="tab-clients" hidden>
+      <div class="row" style="margin-bottom:12px">
+        <input id="q" placeholder="Пошук: імʼя, email, телефон, Telegram" style="flex:1;min-width:200px">
+        <select id="f">
+          <option value="">Усі</option>
+          <option value="not_started">Не запустили бота</option>
+          <option value="active">Проходять</option>
+          <option value="done">Завершили</option>
+          <option value="paused">На паузі</option>
+          <option value="refunded">Повернення</option>
+          <option value="declined">Невдала оплата</option>
+        </select>
+        <label class="small row" style="gap:4px"><input type="checkbox" id="showTest"> тестові</label>
+        <a class="btn sec" href="/api/admin/export.csv">Excel / CSV</a>
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <div class="panel" id="tab-add" hidden>
+      <h2>Додати учасницю вручну</h2>
+      <p class="muted small">Для оплати переказом, подарункового доступу або перевірки курсу. Після збереження зʼявиться персональне посилання на бота — надішліть його учасниці.</p>
+      <form id="addForm" style="display:grid;gap:10px;max-width:460px">
+        <input name="name" placeholder="Імʼя" required>
+        <input name="email" type="email" placeholder="Email (необовʼязково)">
+        <input name="phone" placeholder="Телефон (необовʼязково)">
+        <div class="row"><input name="amount" type="number" step="0.01" placeholder="Сума (необовʼязково)" style="flex:1"><select name="currency"><option>UAH</option><option>EUR</option></select></div>
+        <textarea name="note" placeholder="Нотатка (як оплатила, звідки дізналася…)"></textarea>
+        <label class="small row" style="gap:6px"><input type="checkbox" name="test"> тестовий доступ (не рахувати в статистиці)</label>
+        <button class="btn">Створити доступ</button>
+      </form>
+      <div id="addResult"></div>
+    </div>
+
+    <div class="panel" id="tab-system" hidden>
+      <h2>Відео лекцій</h2>
+      <p class="muted small">Щоб привʼязати або замінити відео, адміністратор надсилає його боту з підписом <b>L1</b>, <b>L2</b> … Файл-додаток (PDF) — з підписом <b>L1 файл</b>.</p>
+      <table><tbody id="lessons"></tbody></table>
+      <h2>Стан системи</h2>
+      <table><tbody id="sys"></tbody></table>
+      <div class="row" style="margin-top:12px"><button class="btn sec" id="setupBot">Перепідключити бота</button></div>
+      <h2>Журнал подій</h2>
+      <table><thead><tr><th>Час</th><th>Подія</th><th class="hide">Замовлення</th></tr></thead><tbody id="log"></tbody></table>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dt = (ms) => ms ? new Date(ms).toLocaleString('uk-UA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const money = (n, c) => n == null ? '' : `${Number(n).toLocaleString('uk-UA')} ${c === 'EUR' ? '€' : c === 'UAH' ? '₴' : c || ''}`;
+let DATA = { orders: [] }, SUM = null;
+
+function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2600); }
+
+async function api(path, body) {
+  const r = await fetch('/api/admin/' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
+  if (r.status === 401 && !path.startsWith('login')) { showLogin(); throw new Error('auth'); }
+  return r.json();
+}
+
+function showLogin() { $('#app').hidden = true; $('#login').hidden = false; }
+
+$('#reqCode').onclick = async () => {
+  $('#reqCode').disabled = true;
+  const r = await api('login/request', {}).catch(() => ({}));
+  $('#loginMsg').className = 'msg ' + (r.ok ? 'ok' : 'err');
+  $('#loginMsg').textContent = r.ok ? 'Код надіслано в Telegram.' : (r.error || 'Помилка');
+  $('#codeForm').hidden = false; $('#code').focus();
+  setTimeout(() => $('#reqCode').disabled = false, 60000);
+};
+$('#codeForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const r = await api('login', { code: $('#code').value }).catch(() => ({}));
+  if (r.ok) { $('#login').hidden = true; boot(); }
+  else { $('#loginMsg').className = 'msg err'; $('#loginMsg').textContent = r.error || 'Помилка'; }
+};
+$('#logout').onclick = async () => { await api('logout', {}); showLogin(); };
+
+document.querySelectorAll('nav button').forEach((b) => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach((x) => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('.panel').forEach((p) => p.hidden = p.id !== 'tab-' + b.dataset.tab);
+  if (b.dataset.tab === 'system') loadLog();
+});
+
+const stat = (v, l) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+
+function renderSummary() {
+  const s = SUM.stats;
+  $('#stats').innerHTML = stat(s.buyers, 'учасниць усього') + stat(s.week, 'за 7 днів')
+    + stat(money(s.uah_sum, 'UAH'), `гривнею (${s.uah_n})`) + stat(money(s.eur_sum, 'EUR'), `євро (${s.eur_n})`)
+    + stat(s.abandoned, 'почали оплату й не завершили') + stat(s.refunded, 'повернення');
+  $('#stats2').innerHTML = stat(s.not_started, 'оплатили, але не запустили бота') + stat(s.in_progress, 'проходять курс')
+    + stat(s.finished, 'завершили') + stat(s.paused, 'на паузі');
+  $('#days').innerHTML = SUM.days.length ? SUM.days.map((d) => `<tr><td>${esc(d.day)}</td><td class="num">${d.n}</td><td class="num">${d.uah ? money(d.uah) : ''}</td><td class="num">${d.eur ? money(d.eur) : ''}</td></tr>`).join('')
+    : '<tr><td colspan="4" class="muted">Оплат поки немає</td></tr>';
+  $('#lessons').innerHTML = SUM.lessons.map((l) => `<tr><td>${l.video ? '<span class="badge b-ok">відео є</span>' : '<span class="badge b-bad">немає відео</span>'}</td><td>${esc(l.title)}${l.doc ? `<div class="small muted">📎 ${esc(l.doc)}</div>` : ''}</td></tr>`).join('');
+  const cronAge = SUM.cron ? Math.round((Date.now() - SUM.cron) / 60000) : null;
+  const rows = [
+    ['Бот', '@' + esc(SUM.bot)],
+    ['Адміністратори в боті', SUM.admins.map((a) => esc(a.name)).join(', ') || '<span class="badge b-bad">немає</span>'],
+    ['Оплата гривнею', SUM.pay.uah ? '<span class="badge b-ok">підключено</span>' : '<span class="badge b-warn">не підключено</span>'],
+    ['Оплата євро', SUM.pay.eur ? '<span class="badge b-ok">підключено</span>' : '<span class="badge b-warn">не підключено</span>'],
+    ['Режим оплати', SUM.pay.test ? '<span class="badge b-test">ТЕСТОВИЙ — гроші не списуються</span>' : 'бойовий'],
+    ['Ціни', `${esc(SUM.prices.uah.label)} / ${esc(SUM.prices.eur.label)}`],
+    ['Розклад', `щодня о ${SUM.schedule.hour}:${String(SUM.schedule.minute).padStart(2, '0')} (${esc(SUM.schedule.timezone)})`],
+    ['Планувальник розсилки', cronAge == null ? '<span class="badge b-warn">ще не запускався</span>' : cronAge < 30 ? `<span class="badge b-ok">працює</span> <span class="small muted">${cronAge} хв тому</span>` : `<span class="badge b-bad">не працює ${cronAge} хв</span>`],
+    ['Лист із посиланням на email', SUM.email ? '<span class="badge b-ok">підключено</span>' : '<span class="badge b-warn">не підключено</span>'],
+  ];
+  $('#sys').innerHTML = rows.map(([a, b]) => `<tr><td class="muted">${a}</td><td>${b}</td></tr>`).join('');
+}
+
+function stateOf(o) {
+  if (o.status === 'refunded') return ['refunded', '<span class="badge b-bad">повернення</span>'];
+  if (o.status === 'declined') return ['declined', '<span class="badge b-bad">оплата не пройшла</span>'];
+  if (o.paused) return ['paused', '<span class="badge b-warn">пауза</span>'];
+  if (o.done_at) return ['done', '<span class="badge b-ok">завершила</span>'];
+  if (o.activated_at) return ['active', '<span class="badge b-blue">проходить</span>'];
+  return ['not_started', '<span class="badge b-warn">не запустила бота</span>'];
+}
+
+function renderList() {
+  const q = $('#q').value.trim().toLowerCase(), f = $('#f').value;
+  const items = DATA.orders.filter((o) => {
+    if (f && stateOf(o)[0] !== f) return false;
+    if (!q) return true;
+    return [o.name, o.email, o.phone, o.tg_name, o.tg_username, o.ref, o.note].join(' ').toLowerCase().includes(q);
+  });
+  $('#list').innerHTML = items.length ? items.map((o) => {
+    const done = Math.max(0, Math.min((o.next_step || 1) - 1, 5));
+    const prog = o.activated_at ? `<span class="progress">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= done ? 'on' : ''}"></i>`).join('')}</span> <span class="small muted">${done}/5</span>` : '';
+    const who = o.name || o.tg_name || o.email || o.phone || 'Без імені';
+    return `<div class="client" data-ref="${esc(o.ref)}">
+      <div class="top"><span class="name">${esc(who)}</span>${stateOf(o)[1]}${o.test ? '<span class="badge b-test">тест</span>' : ''}${prog}</div>
+      <div class="meta">${[money(o.amount, o.currency), dt(o.paid_at || o.created_at), o.email, o.phone, o.tg_username ? '@' + o.tg_username : '', o.method === 'manual' ? 'додано вручну' : ''].filter(Boolean).map(esc).join(' · ')}</div>
+      ${o.next_label && !o.paused && !o.done_at ? `<div class="meta">Наступна лекція: ${esc(o.next_label)}</div>` : ''}
+      ${o.note ? `<div class="meta">📝 ${esc(o.note)}</div>` : ''}
+      <details><summary>Дії</summary>
+        ${o.link ? `<div class="small muted" style="margin-top:8px">Посилання на бота:</div><div class="copy">${esc(o.link)}</div>` : ''}
+        <div class="actions">
+          ${o.link ? '<button class="btn sec" data-a="copy">Скопіювати посилання</button>' : ''}
+          ${o.chat_id && !o.done_at ? '<button class="btn sec" data-a="send_next">Надіслати наступну лекцію зараз</button>' : ''}
+          ${o.chat_id ? '<button class="btn sec" data-a="send_lesson">Повторно надіслати лекцію…</button><button class="btn sec" data-a="message">Написати від імені бота</button>' : ''}
+          ${o.paused ? '<button class="btn sec" data-a="resume">Продовжити розсилку</button>' : (o.activated_at && !o.done_at ? '<button class="btn sec" data-a="pause">Пауза</button>' : '')}
+          ${o.link ? '<button class="btn sec" data-a="new_link">Нове посилання (інший Telegram)</button>' : ''}
+          ${o.email && o.link ? '<button class="btn sec" data-a="resend_email">Надіслати лист повторно</button>' : ''}
+          <button class="btn sec" data-a="note">Нотатка</button>
+          <button class="btn sec" data-a="log">Історія</button>
+        </div>
+        <div class="small muted" style="margin-top:6px">${esc(o.ref)}${o.card ? ' · картка ' + esc(o.card) : ''}</div>
+        <div class="hist"></div>
+      </details>
+    </div>`;
+  }).join('') : '<p class="muted">Нікого не знайдено.</p>';
+}
+
+$('#list').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-a]'); if (!b) return;
+  const card = b.closest('.client'), ref = card.dataset.ref, o = DATA.orders.find((x) => x.ref === ref), a = b.dataset.a;
+  let body = { ref, action: a };
+  if (a === 'copy') { await navigator.clipboard.writeText(o.link).catch(() => {}); return toast('Посилання скопійовано'); }
+  if (a === 'log') { const r = await api('log?ref=' + encodeURIComponent(ref)); card.querySelector('.hist').innerHTML = '<table>' + r.log.map((l) => `<tr><td class="small muted">${dt(l.at)}</td><td class="small">${esc(l.kind)}: ${esc(l.text)}</td></tr>`).join('') + '</table>'; return; }
+  if (a === 'note') { const t = prompt('Нотатка', o.note || ''); if (t === null) return; body.note = t; }
+  if (a === 'message') { const t = prompt('Текст повідомлення учасниці'); if (!t) return; body.text = t; }
+  if (a === 'send_lesson') { const n = prompt('Номер лекції (1–5)'); if (!n) return; body.n = n; }
+  if (a === 'new_link' && !confirm('Старе посилання перестане працювати, а прогрес почнеться заново після запуску бота за новим посиланням. Продовжити?')) return;
+  if (a === 'send_next' && !confirm('Надіслати наступну лекцію прямо зараз?')) return;
+  b.disabled = true;
+  const r = await api('action', body).catch(() => ({}));
+  b.disabled = false;
+  if (r.link) { await navigator.clipboard.writeText(r.link).catch(() => {}); toast('Нове посилання скопійовано'); }
+  else toast(r.ok ? 'Готово' : (r.error || 'Помилка'));
+  loadOrders();
+});
+$('#q').oninput = renderList; $('#f').onchange = renderList; $('#showTest').onchange = loadOrders;
+
+$('#addForm').onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target), body = Object.fromEntries(fd); body.test = fd.get('test') === 'on';
+  const r = await api('manual', body).catch(() => ({}));
+  $('#addResult').innerHTML = r.ok ? `<p class="msg ok">Доступ створено. Надішліть учасниці це посилання:</p><div class="copy">${esc(r.link)}</div><button class="btn sec" style="margin-top:8px" onclick="navigator.clipboard.writeText('${esc(r.link)}');toast('Скопійовано')">Скопіювати</button>` : `<p class="msg err">${esc(r.error || 'Помилка')}</p>`;
+  if (r.ok) { e.target.reset(); loadAll(); }
+};
+
+$('#setupBot').onclick = async () => { const r = await api('setup-bot', {}); toast(`Webhook: ${r.webhook}, бот: ${r.bot}`); };
+
+async function loadLog() {
+  const r = await api('log');
+  $('#log').innerHTML = r.log.map((l) => `<tr><td class="small muted">${dt(l.at)}</td><td class="small">${esc(l.kind)}: ${esc(l.text)}</td><td class="small muted hide">${esc(l.ref || '')}</td></tr>`).join('');
+}
+async function loadOrders() { DATA = await api('orders' + ($('#showTest').checked ? '?test=1' : '')); renderList(); }
+async function loadAll() { SUM = await api('summary'); renderSummary(); await loadOrders(); }
+
+async function boot() {
+  try { await loadAll(); $('#app').hidden = false; } catch (e) { if (e.message !== 'auth') toast('Помилка завантаження'); }
+}
+boot();
+</script>
+</body>
+</html>
