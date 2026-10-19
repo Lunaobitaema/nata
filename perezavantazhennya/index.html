@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Перезавантаження стосунків. Мінікурс про близькість після переїзду</title>
-<meta name="description" content="Психологічний мінікурс із 5 лекцій: чому після переїзду між вами з’явилася дистанція, які потреби стоять за претензіями і як говорити про важливе без звинувачень.">
-<meta property="og:title" content="Ми переїхали разом, але стали далі один від одного">
-<meta property="og:description" content="Мінікурс із 5 лекцій, практичних вправ і робочих матеріалів: зрозумійте, що змінилося у стосунках після переїзду, і зробіть перші кроки до змін.">
+<title>Перезавантаження стосунків. Курс про близькість після переїзду</title>
+<meta name="description" content="Психологічний курс із 5 лекцій: чому після переїзду між вами з’явилася дистанція, які потреби стоять за претензіями і як говорити про важливе без звинувачень.">
+<meta property="og:title" content="Перезавантаження стосунків — поверніть близькість після переїзду">
+<meta property="og:description" content="Курс із 5 лекцій, практичних вправ і робочих матеріалів: зрозумійте, що змінилося у стосунках після переїзду, і зробіть перші кроки до змін.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="uk_UA">
 <meta property="og:image" content="https://natalyakovalenko.com.ua/img/og.jpg">
@@ -283,21 +283,41 @@ footer a{color:inherit}
 .buy--alt{background:transparent;color:var(--cream);box-shadow:inset 0 0 0 2px var(--cream)}
 .buy--alt:hover{background:rgba(244,239,231,.12)}
 .paybtns .buy[aria-disabled="true"]{opacity:.45;pointer-events:none}
+
+/* ===== перший екран: продаючий блок ===== */
+.hero h1{font-size:clamp(1.5rem,3.6vw,2.45rem)}
+.hero h1 span{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:.62em;line-height:1.35;margin-top:.55em;color:var(--sand)}
+.hero .lead{margin-bottom:20px}
+.hero-points{list-style:none;margin:0 auto 26px;padding:0;max-width:640px;text-align:left;display:grid;gap:12px}
+.hero-points li{position:relative;padding-left:30px;font-size:.98rem;line-height:1.5;opacity:.95}
+.hero-points li::before{content:"";position:absolute;left:4px;top:.35em;width:14px;height:8px;border-left:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(-45deg)}
+.hero-points b{display:block;font-weight:600}
+@media (min-width:1100px){.hero-txt{max-width:720px}.hero h1{font-size:2.2rem}.hero .lead{max-width:620px}}
+@media (max-width:760px){.hero-points li{font-size:.93rem}}
+/* обкладинки відео в макеті Telegram */
+.tg .v{position:relative;overflow:hidden;background:#14150E var(--img) center/cover;align-content:center}
+.tg .v::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(20,21,14,.25),rgba(20,21,14,.7))}
+.tg .v::before{position:relative;z-index:1;width:0;height:0;margin:0;padding:0;justify-self:center;border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))}
+.tg .v span,.tg .v em{position:absolute;z-index:1;color:#fff;font-size:.62rem;line-height:1;font-style:normal;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tg .v span{left:8px;bottom:7px;font-weight:600}
+.tg .v em{right:8px;top:7px;background:rgba(0,0,0,.45);padding:3px 6px;border-radius:6px}
 </style>
 </head>
 <body>
 <main>
 <section class="hero" id="top">
   <div class="hero-txt">
-    <p class="kicker">Мінікурс від психологині. 5 лекцій</p>
+    <p class="kicker">Курс від психологині · 5 практичних лекцій</p>
     <p class="name">Перезавантаження стосунків</p>
-    <p class="sub">Близькість без претензій</p>
-    <h1>Ми переїхали разом, але стали далі один від одного</h1>
-    <p class="lead">Зрозумійте, що змінилося у ваших стосунках після переїзду, побачте, чого вам насправді не вистачає, і зробіть перші кроки до змін.</p>
-    <p class="about">Ви розберетеся в причинах дистанції, побачите потреби за претензіями, навчитеся говорити про важливе без взаємних звинувачень і зрозумієте, що можете змінити вже зараз.</p>
+    <h1>Поверніть близькість у стосунки після переїзду <span>— навчіться говорити про важливе без взаємних претензій і краще розуміти одне одного</span></h1>
+    <p class="lead">5 практичних лекцій, які допоможуть зрозуміти, чому після еміграції між вами могла з’явитися дистанція, розпізнати потреби за конфліктами та зробити конкретні кроки назустріч одне одному.</p>
+    <ul class="hero-points">
+      <li><b>Зрозумійте, що змінилося у ваших стосунках після переїзду.</b> Побачте, як нові обставини, напруга та незадоволені потреби можуть впливати на ваш емоційний контакт.</li>
+      <li><b>Навчіться говорити про свої почуття й потреби без звинувачень.</b> Замість претензій, образ і очікування, що партнер сам усе зрозуміє, — конкретні способи висловлювати важливе та запрошувати до діалогу.</li>
+      <li><b>Отримайте практичні інструменти для відновлення близькості.</b> За допомогою вправ і робочих матеріалів визначте, чого вам бракує у стосунках, і складіть власний план змін, який зможете почати втілювати самостійно.</li>
+    </ul>
     <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
     <a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a>
-    <p class="inside">5 лекцій + практичні вправи + робочі матеріали</p>
   </div>
   <div class="pic pic--hero" aria-hidden="true"></div>
 </section>
@@ -375,12 +395,13 @@ footer a{color:inherit}
       <div>
       <p class="hello">Привіт,</p>
       <h2>я Наталя Коваленко</h2>
-      <p>Я <b>практикуюча психологиня, психотерапевтка в методі позитивної психотерапії</b>. Знаю, як часто за конфліктами стоїть не відсутність любові, а незрозумілі потреби, накопичена втома, образи та невміння говорити про важливе.</p>
+      <p>Я <b>практикуюча психологиня, психотерапевтка в методі позитивної психотерапії</b>, тренерка та експертка в проєктах психологічного добробуту, членкиня Всесвітньої асоціації позитивної психотерапії (WAPP).</p>
+      <p>Працюю у сфері психології та психотерапії з 2015 року — з питаннями партнерських стосунків, самооцінки, тривожності та емоційного вигорання. Допомагаю людям краще розуміти себе, свої потреби й почуття, долати труднощі у стосунках і знаходити нові способи взаємодії.</p>
       <ul class="checks">
         <li>У практиці з 2015 року</li>
-        <li>Теми роботи: самооцінка, близькість, стосунки жінок і пар</li>
-        <li>Сотні жінок у індивідуальній роботі</li>
-        <li>Десятки пар у парній терапії</li>
+        <li>Членкиня Всесвітньої асоціації позитивної психотерапії (WAPP)</li>
+        <li>Партнерські стосунки, самооцінка, тривожність, емоційне вигорання</li>
+        <li>Тренерка в проєктах психологічного добробуту</li>
       </ul>
       </div>
     </div>
@@ -422,11 +443,11 @@ footer a{color:inherit}
       </div>
       <div class="tg" aria-hidden="true">
         <div class="hd"><i></i>Перезавантаження стосунків</div>
-        <div class="m">Вітаю! Ви в курсі. Ось ваші робочі матеріали.<small>після оплати</small></div>
+        <div class="m">Вітаю! Ви в курсі 🌿 Завтра об 11:00 тут з’явиться перша лекція.<small>після оплати</small></div>
         <span class="d">наступного дня</span>
-        <div class="m"><div class="v"></div>Лекція 1. Переїзд як криза<small>11:00</small></div>
+        <div class="m"><div class="v" style="--img:url('https://images.unsplash.com/photo-1758523670991-ee93bc48d81d?auto=format&fit=crop&w=480&h=270&q=60')"><span>Лекція 1</span><em>відео · MP4</em></div>Лекція 1. Переїзд як криза<small>11:00</small></div>
         <span class="d">ще через день</span>
-        <div class="m"><div class="v"></div>Лекція 2. За кожною претензією є потреба<small>11:00</small></div>
+        <div class="m"><div class="v" style="--img:url('https://images.unsplash.com/photo-1713942590288-1468a2d88ee4?auto=format&fit=crop&w=480&h=270&q=60')"><span>Лекція 2</span><em>відео · MP4</em></div>Лекція 2. За кожною претензією є потреба<small>11:00</small></div>
       </div>
     </div>
   </div>
@@ -560,10 +581,6 @@ footer a{color:inherit}
       <details>
         <summary>Скільки часу займає проходження?</summary>
         <p>П’ять лекцій по 20–30 хвилин, загалом приблизно 2–2,5 години плюс час на практичні вправи. Лекції надходять у Telegram по одній на день, об 11:00 за Києвом, починаючи з наступного дня після оплати, а переглянути їх можна тоді, коли вам зручно.</p>
-      </details>
-      <details>
-        <summary>Чи можу я повернути кошти?</summary>
-        <p>Так. Протягом 14 днів після покупки ви можете звернутися щодо повернення коштів, якщо зрозумієте, що курс вам не підходить. Повернення здійснюється відповідно до <a href="/refund.html">умов повернення коштів</a>.</p>
       </details>
     </div>
   </div>
