@@ -274,7 +274,7 @@ async function sendLesson(env, chat_id, n, files) {
   if (f.file_id) {
     const method = f.file_type === 'document' ? 'sendDocument' : 'sendVideo';
     const field = f.file_type === 'document' ? 'document' : 'video';
-    res = await tg(env, method, { chat_id, [field]: f.file_id, caption: caption.slice(0, 1024), supports_streaming: true });
+    res = await tg(env, method, { chat_id, [field]: f.file_id, caption: caption.slice(0, 1024), supports_streaming: true, protect_content: COURSE.protect_videos !== false });
     if (res.ok && caption.length > 1024) await say(env, chat_id, caption.slice(1024));
   } else {
     res = await say(env, chat_id, caption);

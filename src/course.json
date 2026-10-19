@@ -7,6 +7,8 @@
     "label": "Підписатися в Instagram",
     "url": "https://www.instagram.com/natalya.kovalenko.psy/"
   },
+  "_protect_comment": "protect_videos: true — відео лекцій і відеознайомства не можна переслати, зберегти на пристрій чи (на телефонах) зробити скриншот. PDF-матеріали не захищаються, щоб їх можна було зберегти й роздрукувати.",
+  "protect_videos": true,
   "prices": {
     "uah": {
       "amount": 490,
