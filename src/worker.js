@@ -365,7 +365,7 @@ async function handleUpdate(env, u) {
     // привʼязка відео / файлів: підпис L1 … L5 (+ «файл»)
     const cap = (msg.caption || '').trim();
     // «Вступ» (або L0) — вступне відео, приходить одразу після привітання
-    const mm = cap.match(/^(?:L(\d+)|(вступ|intro))\s*(файл|file|doc)?/i);
+    const mm = cap.match(/^(?:L(\d+)|(вступ|відеознайомство|intro))\s*(файл|file|doc)?/i);
     if (mm && (msg.video || msg.document || msg.animation)) {
       const n = mm[2] ? 0 : +mm[1];
       if (n < 0 || n > LESSONS) { await say(env, chat, `Номер лекції має бути від 1 до ${LESSONS} (або підпис «Вступ»).`); return; }
@@ -384,7 +384,7 @@ async function handleUpdate(env, u) {
           ON CONFLICT(n) DO UPDATE SET file_id = excluded.file_id, file_type = excluded.file_type, updated_at = excluded.updated_at`, n, fileId, type, now());
         const dur = v && v.duration ? ` (${Math.round(v.duration / 60)} хв)` : '';
         await say(env, chat, n === 0
-          ? `🎬 Вступне відео${dur} привʼязано. Воно надходитиме одразу після привітання.`
+          ? `🎬 Відеознайомство${dur} привʼязано. Воно надходитиме одразу після привітання.`
           : `🎬 Відео${dur} привʼязано до лекції ${n}: ${COURSE.lessons[n - 1].title}`);
       }
       await logEvent(env, null, 'lesson-file', `${n === 0 ? 'intro' : 'L' + n} ${isAttachment ? 'doc' : 'video'} by ${name}`);
