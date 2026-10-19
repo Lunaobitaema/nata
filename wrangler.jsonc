@@ -24,11 +24,8 @@
   "triggers": { "crons": ["*/10 * * * *"] },
   "vars": {
     "SITE_URL": "https://natalyakovalenko.com.ua",
-    "BOT_USERNAME": "natalyakovalenko_bot",
-    // "1" = тестова оплата WayForPay (гроші не списуються). Для бойових оплат видалити цей рядок.
-    "WFP_TEST": "1",
-    // "1" = показати другу кнопку — оплата європейською карткою в євро (потрібен мерчант WFP_EUR_*)
-    "PAY_EUR": "0"
+    "BOT_USERNAME": "natalyakovalenko_bot"
+    // WFP_TEST і PAY_EUR керуються вручну в панелі Cloudflare (Runtime variables and secrets)
   },
   "observability": { "enabled": true }
 }
