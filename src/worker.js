@@ -267,9 +267,9 @@ async function lessonFiles(env) {
 
 // надіслати лекцію n у чат (без зміни прогресу)
 async function sendLesson(env, chat_id, n, files) {
-  const L = COURSE.lessons[n - 1];
+  const L = n === 0 ? COURSE.intro : COURSE.lessons[n - 1];
   const f = files[n] || {};
-  const caption = `${L.title}\n\n${L.text}`;
+  const caption = L.text ? `${L.title}\n\n${L.text}` : L.title;
   let res;
   if (f.file_id) {
     const method = f.file_type === 'document' ? 'sendDocument' : 'sendVideo';
@@ -340,7 +340,7 @@ async function handleUpdate(env, u) {
     const code = text.split(/\s+/)[1] || '';
     if (env.ADMIN_CODE && safeEqual(code, env.ADMIN_CODE)) {
       await run(env, 'INSERT OR REPLACE INTO admins (chat_id, name, added_at) VALUES (?, ?, ?)', chat, name, now());
-      await say(env, chat, `✅ ${name}, вас додано як адміністратора.\n\nВи отримуватимете сповіщення про оплати й повідомлення від учасниць, а також коди входу в адмінку.\n\nЯк привʼязати відео: надішліть сюди відео з підписом L1 (для лекції 1), L2 … L${LESSONS}. Файл-додаток (PDF) — з підписом L1 файл.\n\nКоманди:\n/lessons — стан відео\n/preview 1 — надіслати собі лекцію 1`);
+      await say(env, chat, `✅ ${name}, вас додано як адміністратора.\n\nВи отримуватимете сповіщення про оплати й повідомлення від учасниць, а також коди входу в адмінку.\n\nЯк привʼязати відео: надішліть сюди відео з підписом Вступ (приходить одразу після привітання), L1 (для лекції 1), L2 … L${LESSONS}. Файл-додаток (PDF) — з підписом L1 файл.\n\nКоманди:\n/lessons — стан відео\n/preview 0 — надіслати собі вступ\n/preview 1 — надіслати собі лекцію 1`);
     } else {
       await say(env, chat, 'Невірний код.');
     }
@@ -350,16 +350,18 @@ async function handleUpdate(env, u) {
   if (isAdmin) {
     // привʼязка відео / файлів: підпис L1 … L5 (+ «файл»)
     const cap = (msg.caption || '').trim();
-    const mm = cap.match(/^L(\d+)\s*(файл|file|doc)?/i);
+    // «Вступ» (або L0) — вступне відео, приходить одразу після привітання
+    const mm = cap.match(/^(?:L(\d+)|(вступ|intro))\s*(файл|file|doc)?/i);
     if (mm && (msg.video || msg.document || msg.animation)) {
-      const n = +mm[1];
-      if (n < 1 || n > LESSONS) { await say(env, chat, `Номер лекції має бути від 1 до ${LESSONS}.`); return; }
-      const isAttachment = !!mm[2];
+      const n = mm[2] ? 0 : +mm[1];
+      if (n < 0 || n > LESSONS) { await say(env, chat, `Номер лекції має бути від 1 до ${LESSONS} (або підпис «Вступ»).`); return; }
+      const label = n === 0 ? 'вступу' : `лекції ${n}`;
+      const isAttachment = !!mm[3];
       if (isAttachment) {
         if (!msg.document) { await say(env, chat, 'Для підпису «файл» надішліть документ (PDF тощо).'); return; }
         await run(env, `INSERT INTO lessons (n, doc_id, doc_name, updated_at) VALUES (?, ?, ?, ?)
           ON CONFLICT(n) DO UPDATE SET doc_id = excluded.doc_id, doc_name = excluded.doc_name, updated_at = excluded.updated_at`, n, msg.document.file_id, msg.document.file_name || 'файл', now());
-        await say(env, chat, `📎 Файл «${msg.document.file_name || 'файл'}» привʼязано до лекції ${n}.`);
+        await say(env, chat, `📎 Файл «${msg.document.file_name || 'файл'}» привʼязано до ${label}.`);
       } else {
         const v = msg.video || msg.animation;
         const fileId = v ? v.file_id : msg.document.file_id;
@@ -367,23 +369,26 @@ async function handleUpdate(env, u) {
         await run(env, `INSERT INTO lessons (n, file_id, file_type, updated_at) VALUES (?, ?, ?, ?)
           ON CONFLICT(n) DO UPDATE SET file_id = excluded.file_id, file_type = excluded.file_type, updated_at = excluded.updated_at`, n, fileId, type, now());
         const dur = v && v.duration ? ` (${Math.round(v.duration / 60)} хв)` : '';
-        await say(env, chat, `🎬 Відео${dur} привʼязано до лекції ${n}: ${COURSE.lessons[n - 1].title}`);
+        await say(env, chat, n === 0
+          ? `🎬 Вступне відео${dur} привʼязано. Воно надходитиме одразу після привітання.`
+          : `🎬 Відео${dur} привʼязано до лекції ${n}: ${COURSE.lessons[n - 1].title}`);
       }
-      await logEvent(env, null, 'lesson-file', `L${n} ${isAttachment ? 'doc' : 'video'} by ${name}`);
+      await logEvent(env, null, 'lesson-file', `${n === 0 ? 'intro' : 'L' + n} ${isAttachment ? 'doc' : 'video'} by ${name}`);
       return;
     }
     if (text === '/lessons') {
       const f = await lessonFiles(env);
-      const lines = COURSE.lessons.map((L, i) => `${f[i + 1]?.file_id ? '✅' : '❌'} L${i + 1} ${L.title}${f[i + 1]?.doc_id ? ' 📎' : ''}`);
+      const lines = [`${f[0]?.file_id ? '✅' : '❌'} ${COURSE.intro.title} (одразу після привітання)${f[0]?.doc_id ? ' 📎' : ''}`,
+        ...COURSE.lessons.map((L, i) => `${f[i + 1]?.file_id ? '✅' : '❌'} L${i + 1} ${L.title}${f[i + 1]?.doc_id ? ' 📎' : ''}`)];
       await say(env, chat, lines.join('\n'));
       return;
     }
     const pv = text.match(/^\/preview\s+(\d+)/);
     if (pv) {
       const n = +pv[1];
-      if (n >= 1 && n <= LESSONS) await sendLesson(env, chat, n, await lessonFiles(env));
+      if (n >= 0 && n <= LESSONS) await sendLesson(env, chat, n, await lessonFiles(env));
       else if (n === LESSONS + 1) await say(env, chat, COURSE.texts.final);
-      else await say(env, chat, `Вкажіть номер від 1 до ${LESSONS + 1} (${LESSONS + 1} — фінальне повідомлення).`);
+      else await say(env, chat, `Вкажіть номер від 0 до ${LESSONS + 1} (0 — вступ, ${LESSONS + 1} — фінальне повідомлення).`);
       return;
     }
     // відповідь адміністратора на переслане повідомлення учасниці
@@ -419,13 +424,15 @@ async function handleUpdate(env, u) {
     await run(env, 'UPDATE orders SET chat_id = ?, tg_username = ?, tg_name = ?, activated_at = ?, next_step = 1, next_at = ?, paused = 0 WHERE ref = ?',
       chat, from.username || null, name, now(), first, o.ref);
     await say(env, chat, fill(COURSE.texts.welcome, { name: from.first_name || name, time: timeLabel() }));
+    const files = await lessonFiles(env);
+    if (files[0]?.file_id) await sendLesson(env, chat, 0, files);
     await logEvent(env, o.ref, 'activated', `chat ${chat}`);
     await notifyAdmins(env, `🌱 ${name}${from.username ? ' (@' + from.username + ')' : ''} запустила бота. Перша лекція: ${fmtKyiv(first)}.`);
     return;
   }
 
   if (text === '/help') { await say(env, chat, fill(COURSE.texts.help, { time: timeLabel() })); return; }
-  if (isAdmin) { await say(env, chat, 'Команди адміністратора: /lessons, /preview N. Щоб привʼязати відео, надішліть його з підписом L1…L5.'); return; }
+  if (isAdmin) { await say(env, chat, 'Команди адміністратора: /lessons, /preview N. Щоб привʼязати відео, надішліть його з підписом Вступ або L1…L5.'); return; }
 
   // будь-яке інше повідомлення учасниці → адміністраторам
   const o = await one(env, 'SELECT * FROM orders WHERE chat_id = ? ORDER BY created_at DESC LIMIT 1', chat);
@@ -519,7 +526,7 @@ async function adminApi(env, request, path) {
       SUM(CASE WHEN currency = 'UAH' THEN amount ELSE 0 END) AS uah, SUM(CASE WHEN currency = 'EUR' THEN amount ELSE 0 END) AS eur
       FROM orders WHERE status = 'paid' AND test = 0 AND paid_at >= ? GROUP BY day ORDER BY day DESC`, now() - 30 * 864e5);
     const files = await lessonFiles(env);
-    const lessons = COURSE.lessons.map((L, i) => ({ n: i + 1, title: L.title, video: !!files[i + 1]?.file_id, doc: files[i + 1]?.doc_name || null, updated: files[i + 1]?.updated_at || null }));
+    const lessons = [{ title: COURSE.intro.title + ' (одразу після привітання)' }, ...COURSE.lessons].map((L, n) => ({ n, title: L.title, video: !!files[n]?.file_id, doc: files[n]?.doc_name || null, updated: files[n]?.updated_at || null }));
     const admins = await all(env, 'SELECT name, added_at FROM admins');
     const cron = +(await getMeta(env, 'cron_last') || 0);
     return json({ stats: s, days, lessons, admins, cron, pay: payMethods(env), email: !!env.RESEND_API_KEY, bot: botUser(env), prices: COURSE.prices, schedule: COURSE.schedule });
