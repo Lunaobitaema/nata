@@ -283,6 +283,20 @@ async function sendLesson(env, chat_id, n, files) {
   return { ok: !!res.ok, error: res.description, missingVideo: !f.file_id };
 }
 
+// вітальна серія одразу після /start: привітання → вступне відео → про авторку (+ Instagram) → як проходить навчання
+async function sendOnboarding(env, chat_id, files) {
+  const T = COURSE.texts;
+  await say(env, chat_id, fill(T.welcome, { time: timeLabel() }));
+  const hasVideo = !!files[0]?.file_id;
+  if (hasVideo) await sendLesson(env, chat_id, 0, files);
+  const ig = COURSE.instagram;
+  await say(env, chat_id, fill(T.about, { video_note: hasVideo ? T.about_video : '\n' }), {
+    parse_mode: 'HTML',
+    ...(ig?.url ? { reply_markup: { inline_keyboard: [[{ text: ig.label, url: ig.url }]] } } : {}),
+  });
+  await say(env, chat_id, fill(T.how, { time: timeLabel() }), { parse_mode: 'HTML' });
+}
+
 async function deliverStep(env, o, files) {
   const step = o.next_step || 1;
   if (step <= LESSONS) {
@@ -340,7 +354,7 @@ async function handleUpdate(env, u) {
     const code = text.split(/\s+/)[1] || '';
     if (env.ADMIN_CODE && safeEqual(code, env.ADMIN_CODE)) {
       await run(env, 'INSERT OR REPLACE INTO admins (chat_id, name, added_at) VALUES (?, ?, ?)', chat, name, now());
-      await say(env, chat, `✅ ${name}, вас додано як адміністратора.\n\nВи отримуватимете сповіщення про оплати й повідомлення від учасниць, а також коди входу в адмінку.\n\nЯк привʼязати відео: надішліть сюди відео з підписом Вступ (приходить одразу після привітання), L1 (для лекції 1), L2 … L${LESSONS}. Файл-додаток (PDF) — з підписом L1 файл.\n\nКоманди:\n/lessons — стан відео\n/preview 0 — надіслати собі вступ\n/preview 1 — надіслати собі лекцію 1`);
+      await say(env, chat, `✅ ${name}, вас додано як адміністратора.\n\nВи отримуватимете сповіщення про оплати й повідомлення від учасниць, а також коди входу в адмінку.\n\nЯк привʼязати відео: надішліть сюди відео з підписом Вступ (приходить одразу після привітання), L1 (для лекції 1), L2 … L${LESSONS}. Файл-додаток (PDF) — з підписом L1 файл.\n\nКоманди:\n/lessons — стан відео\n/preview 0 — надіслати собі вітальні повідомлення з вступним відео\n/preview 1 — надіслати собі лекцію 1`);
     } else {
       await say(env, chat, 'Невірний код.');
     }
@@ -386,9 +400,10 @@ async function handleUpdate(env, u) {
     const pv = text.match(/^\/preview\s+(\d+)/);
     if (pv) {
       const n = +pv[1];
-      if (n >= 0 && n <= LESSONS) await sendLesson(env, chat, n, await lessonFiles(env));
+      if (n === 0) await sendOnboarding(env, chat, await lessonFiles(env));
+      else if (n >= 1 && n <= LESSONS) await sendLesson(env, chat, n, await lessonFiles(env));
       else if (n === LESSONS + 1) await say(env, chat, COURSE.texts.final);
-      else await say(env, chat, `Вкажіть номер від 0 до ${LESSONS + 1} (0 — вступ, ${LESSONS + 1} — фінальне повідомлення).`);
+      else await say(env, chat, `Вкажіть номер від 0 до ${LESSONS + 1} (0 — вітальні повідомлення з вступом, ${LESSONS + 1} — фінальне повідомлення).`);
       return;
     }
     // відповідь адміністратора на переслане повідомлення учасниці
@@ -423,9 +438,7 @@ async function handleUpdate(env, u) {
     const first = nextSlot(now());
     await run(env, 'UPDATE orders SET chat_id = ?, tg_username = ?, tg_name = ?, activated_at = ?, next_step = 1, next_at = ?, paused = 0 WHERE ref = ?',
       chat, from.username || null, name, now(), first, o.ref);
-    await say(env, chat, fill(COURSE.texts.welcome, { name: from.first_name || name, time: timeLabel() }));
-    const files = await lessonFiles(env);
-    if (files[0]?.file_id) await sendLesson(env, chat, 0, files);
+    await sendOnboarding(env, chat, await lessonFiles(env));
     await logEvent(env, o.ref, 'activated', `chat ${chat}`);
     await notifyAdmins(env, `🌱 ${name}${from.username ? ' (@' + from.username + ')' : ''} запустила бота. Перша лекція: ${fmtKyiv(first)}.`);
     return;
