@@ -24,6 +24,7 @@
 import COURSE from './course.json';
 import ADMIN_HTML from './admin.html';
 import { hmacMd5 } from './md5.js';
+import { qrSvg } from './qr.js';
 
 const WFP_TEST_ACCOUNT = 'test_merch_n1';
 const WFP_TEST_SECRET = 'flk3409refn54t54t*FNJRET'; // публічні тестові дані з документації WayForPay
@@ -647,6 +648,14 @@ export default {
         if (!o) return json({ status: 'unknown' }, 404);
         const ok = ['paid', 'manual'].includes(o.status);
         return json({ status: o.status, test: !!o.test, bot: ok ? botLink(env, o.token) : null });
+      }
+
+      // QR-код із посиланням на бота (для сторінки «Дякуємо»: оплатили з компʼютера — сканують телефоном)
+      if (p === '/api/qr') {
+        await db(env);
+        const o = await one(env, "SELECT token FROM orders WHERE ref = ? AND status IN ('paid', 'manual')", url.searchParams.get('ref') || '');
+        if (!o) return new Response('not found', { status: 404 });
+        return new Response(qrSvg(botLink(env, o.token)), { headers: { 'content-type': 'image/svg+xml', 'cache-control': 'private, max-age=3600' } });
       }
 
       if (p === '/api/tg' && request.method === 'POST') {
