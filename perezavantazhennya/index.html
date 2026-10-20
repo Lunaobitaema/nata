@@ -70,8 +70,16 @@ b,strong{font-weight:700}
 
 /* ціна */
 .price{margin:0 0 22px;line-height:1.1}
-.price b{display:block;color:var(--gold);font-size:2.3rem}
-.price s{display:block;font-size:1.1rem;opacity:.75;margin-top:4px}
+.price b{display:block;color:var(--gold);font-size:2.6rem}
+/* стара ціна: менша, перекреслена двома червоними лініями навхрест */
+.price s{position:relative;display:inline-block;font-size:1.3rem;font-weight:600;text-decoration:none;opacity:.85;padding:0 .25em;margin-bottom:6px}
+.price s::before,.price s::after{content:"";position:absolute;left:-.1em;right:-.1em;top:50%;height:3px;margin-top:-1.5px;background:#E5484D;border-radius:2px}
+.price s::before{transform:rotate(14deg)}
+.price s::after{transform:rotate(-14deg)}
+.price s[hidden]{display:none}
+/* дата старту курсу */
+.start{display:inline-block;margin:6px 0 18px;padding:.5em 1.1em;border:1px solid var(--line-d);border-radius:999px;background:rgba(27,28,20,.55);font-size:1rem;letter-spacing:.02em}
+.start b{color:var(--gold)}
 
 /* перший екран */
 .hero{position:relative;text-align:center;overflow:hidden;background:radial-gradient(120% 70% at 50% 0,#414428,var(--base) 62%)}
@@ -316,7 +324,8 @@ footer a{color:inherit}
       <li>Навчіться говорити про свої почуття й потреби без звинувачень</li>
       <li>Отримайте практичні інструменти для відновлення близькості</li>
     </ul>
-    <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+    <p class="start" data-start hidden>Старт курсу: <b></b></p>
+    <p class="price" data-pricebox hidden><s data-old hidden></s><b data-price></b></p>
     <a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a>
   </div>
   <div class="pic pic--hero" aria-hidden="true"></div>
@@ -482,7 +491,7 @@ footer a{color:inherit}
     <div class="pay">
       <h2>Перезавантаження стосунків</h2>
       <p class="tag">Близькість без претензій</p>
-      <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+      <p class="price" data-pricebox hidden><s data-old hidden></s><b data-price></b></p>
       <div class="paybtns">
         <a class="buy" href="/pay/uah" data-pay="uah">Купити курс</a>
         <a class="buy buy--alt" href="/pay/eur" data-pay="eur" hidden>Оплатити європейською карткою <span>9 €</span></a>
@@ -590,7 +599,7 @@ footer a{color:inherit}
     <h2>Іноді для змін потрібні не роки розмов</h2>
     <p class="narrow">Іноді потрібен момент, коли ви нарешті розумієте, що насправді відбувається між вами. Буває, що цього розуміння та кількох нових інструментів достатньо, щоб почати рухатися одне до одного.</p>
     <p class="choice">Ви можете й далі просто жити поруч. А можете почати повертати ваше «ми».</p>
-    <p class="price" data-pricebox hidden><b data-price></b><s data-old></s></p>
+    <p class="price" data-pricebox hidden><s data-old hidden></s><b data-price></b></p>
     <a class="buy" href="/pay/uah" data-pay-link="uah">Купити курс</a>
   </div>
   <div class="pic pic--final" aria-hidden="true"></div>
@@ -615,7 +624,7 @@ footer a{color:inherit}
 /* ===== НАЛАШТУВАННЯ: змінюйте тільки цей блок ===== */
 const CONFIG = {
   price:       '490 грн',  // наприклад '990 грн'. Порожньо = ціна не показується
-  oldPrice:    '',  // стара ціна, наприклад '1500 грн'. Вказуйте, лише якщо курс справді так продавався
+  oldPrice:    '2450 грн',  // стара ціна (перекреслена над основною). Порожньо = не показується. Вказуйте, лише якщо курс справді так продавався
   legal:       'ФОП Коваленко Наталя Євгеніївна · РНОКПП 2870503906 · info@natalyakovalenko.com.ua · +380 50 473 35 61'   // рядок із даними ФОП і контактами для підвалу
 };
 /* ================================================== */
@@ -623,10 +632,27 @@ const CONFIG = {
 if (CONFIG.price) {
   document.querySelectorAll('[data-pricebox]').forEach(box => {
     box.querySelector('[data-price]').textContent = CONFIG.price;
-    box.querySelector('[data-old]').textContent = CONFIG.oldPrice || '';
+    const old = box.querySelector('[data-old]');
+    old.textContent = CONFIG.oldPrice || '';
+    old.hidden = !CONFIG.oldPrice;
+    if (CONFIG.oldPrice) old.setAttribute('aria-label', 'Стара ціна ' + CONFIG.oldPrice);
     box.hidden = false;
   });
 }
+
+/* Дата старту: завтрашній день за київським часом (перша лекція приходить наступного дня після запуску бота).
+   Оновлюється сама щохвилини, тож після півночі за Києвом дата зміниться навіть на відкритій сторінці. */
+const startEl = document.querySelector('[data-start]');
+function kyivTomorrow() {
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Kyiv', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const [y, m, d] = today.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d + 1, 12));
+  return new Intl.DateTimeFormat('uk-UA', { day: 'numeric', month: 'long', timeZone: 'UTC' }).format(t);
+}
+function showStart() {
+  try { startEl.querySelector('b').textContent = kyivTomorrow(); startEl.hidden = false; } catch (e) { startEl.hidden = true; }
+}
+if (startEl) { showStart(); setInterval(showStart, 60000); }
 
 /* Кнопки оплати: сервер повідомляє, які способи оплати вже підключені */
 fetch('/api/pay-methods').then(r => r.ok ? r.json() : null).then(m => {
