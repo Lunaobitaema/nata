@@ -92,6 +92,15 @@ a{color:var(--sand)}
         if (d.bot) {
           document.getElementById('botBtn').href = d.bot;
           if (d.test) document.getElementById('testBadge').hidden = false;
+          // Meta Pixel: покупка — один раз на замовлення, без тестових оплат, лише за згоди на cookie
+          if (!d.test && window.nkTrack) {
+            var pk = 'nk_px_' + ref, sent = null;
+            try { sent = localStorage.getItem(pk); } catch (e) {}
+            if (!sent && window.fbq) {
+              window.nkTrack('Purchase', { value: 490, currency: 'UAH', content_name: 'Перезавантаження стосунків' }, { eventID: ref });
+              try { localStorage.setItem(pk, '1'); } catch (e) {}
+            }
+          }
           var qi = document.getElementById('qrImg');
           qi.onload = function () { document.getElementById('qrBox').hidden = false; };
           qi.src = '/api/qr?ref=' + encodeURIComponent(ref);
@@ -108,5 +117,6 @@ a{color:var(--sand)}
   })();
 })();
 </script>
+<script src="/perezavantazhennya/pixel.js"></script>
 </body>
 </html>

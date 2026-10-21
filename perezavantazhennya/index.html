@@ -682,6 +682,16 @@ document.querySelectorAll('[data-rail]').forEach(b => b.addEventListener('click'
   const step = rail.querySelector('li').offsetWidth + 16;
   rail.scrollBy({ left: step * +b.dataset.rail, behavior: 'smooth' });
 }));
+
+/* Meta Pixel: перехід до оплати (InitiateCheckout) — лише якщо відвідувач дав згоду на cookie */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="/pay/"]');
+  if (!a || !window.fbq || e.metaKey || e.ctrlKey) return;
+  e.preventDefault();
+  window.nkTrack('InitiateCheckout', { value: 490, currency: 'UAH', content_name: 'Перезавантаження стосунків' });
+  setTimeout(() => { location.href = a.href; }, 350);
+});
 </script>
+<script src="/perezavantazhennya/pixel.js" defer></script>
 </body>
 </html>
