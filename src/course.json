@@ -1,6 +1,7 @@
 {
   "_comment": "Налаштування курсу. Тексти повідомлень бота, ціни, лекції. Змінюється через GitHub (промт → коміт → Cloudflare сам оновить).",
   "product": "Курс «Перезавантаження стосунків»",
+  "payment_purpose": "Інформаційні послуги",
   "landing": "/perezavantazhennya/",
   "contact": "https://t.me/natalyakovalenko_bot",
   "instagram": {

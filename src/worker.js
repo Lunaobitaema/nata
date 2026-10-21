@@ -189,7 +189,7 @@ async function startPayment(env, method, url) {
     orderDate: String(t),
     amount: String(price.amount),
     currency: price.currency,
-    'productName[]': COURSE.product,
+    'productName[]': COURSE.payment_purpose || COURSE.product, // призначення платежу в квитанції WayForPay
     'productPrice[]': String(price.amount),
     'productCount[]': '1',
     returnUrl: `${site}/pay/return?ref=${encodeURIComponent(ref)}`,
