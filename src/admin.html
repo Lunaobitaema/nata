@@ -97,6 +97,7 @@ textarea{width:100%;min-height:70px}
           <option value="paused">На паузі</option>
           <option value="refunded">Повернення</option>
           <option value="declined">Невдала оплата</option>
+          <option value="consult">Консультації</option>
         </select>
         <label class="small row" style="gap:4px"><input type="checkbox" id="showTest"> тестові</label>
         <a class="btn sec" href="/api/admin/export.csv">Excel / CSV</a>
@@ -177,7 +178,7 @@ function renderSummary() {
   const s = SUM.stats;
   $('#stats').innerHTML = stat(s.buyers, 'учасниць усього') + stat(s.week, 'за 7 днів')
     + stat(money(s.uah_sum, 'UAH'), `гривнею (${s.uah_n})`) + stat(money(s.eur_sum, 'EUR'), `євро (${s.eur_n})`)
-    + stat(s.abandoned, 'почали оплату й не завершили') + stat(s.refunded, 'повернення');
+    + stat(s.abandoned, 'почали оплату й не завершили') + stat(s.refunded, 'повернення') + stat(s.consult_n, 'оплачених консультацій' + (s.consult_uah ? ' · ' + Math.round(s.consult_uah) + ' грн' : ''));
   $('#stats2').innerHTML = stat(s.not_started, 'оплатили, але не запустили бота') + stat(s.in_progress, 'проходять курс')
     + stat(s.finished, 'завершили') + stat(s.paused, 'на паузі');
   $('#days').innerHTML = SUM.days.length ? SUM.days.map((d) => `<tr><td>${esc(d.day)}</td><td class="num">${d.n}</td><td class="num">${d.uah ? money(d.uah) : ''}</td><td class="num">${d.eur ? money(d.eur) : ''}</td></tr>`).join('')
@@ -199,6 +200,7 @@ function renderSummary() {
 }
 
 function stateOf(o) {
+  if (o.kind === 'consult') return ['consult', o.status === 'refunded' ? '<span class="badge b-bad">консультація: повернення</span>' : o.status === 'declined' ? '<span class="badge b-bad">консультація: оплата не пройшла</span>' : '<span class="badge b-blue">💼 консультація</span>'];
   if (o.status === 'refunded') return ['refunded', '<span class="badge b-bad">повернення</span>'];
   if (o.status === 'declined') return ['declined', '<span class="badge b-bad">оплата не пройшла</span>'];
   if (o.paused) return ['paused', '<span class="badge b-warn">пауза</span>'];
@@ -220,7 +222,8 @@ function renderList() {
     const who = o.name || o.tg_name || o.email || o.phone || 'Без імені';
     return `<div class="client" data-ref="${esc(o.ref)}">
       <div class="top"><span class="name">${esc(who)}</span>${stateOf(o)[1]}${o.test ? '<span class="badge b-test">тест</span>' : ''}${prog}</div>
-      <div class="meta">${[money(o.amount, o.currency), dt(o.paid_at || o.created_at), o.email, o.phone, o.tg_username ? '@' + o.tg_username : '', o.method === 'manual' ? 'додано вручну' : ''].filter(Boolean).map(esc).join(' · ')}</div>
+      <div class="meta">${[money(o.amount, o.currency), dt(o.paid_at || o.created_at), o.email, o.phone, o.tg_username ? '@' + o.tg_username : '', o.method === 'manual' ? 'додано вручну' : '', o.kind === 'consult' ? `${o.plan_title} · ${o.eur} € · промокод ${o.promo}` : ''].filter(Boolean).map(esc).join(' · ')}</div>
+      ${o.promo_info ? `<div class="meta">🎁 Промокод на консультацію ${esc(o.promo_info.code)} — ${o.promo_info.used ? 'використано' : 'діє до ' + esc(o.promo_info.until)}</div>` : ''}
       ${o.next_label && !o.paused && !o.done_at ? `<div class="meta">Наступна лекція: ${esc(o.next_label)}</div>` : ''}
       ${o.note ? `<div class="meta">📝 ${esc(o.note)}</div>` : ''}
       <details><summary>Дії</summary>
@@ -229,6 +232,7 @@ function renderList() {
           ${o.link ? '<button class="btn sec" data-a="copy">Скопіювати посилання</button>' : ''}
           ${o.chat_id && !o.done_at ? '<button class="btn sec" data-a="send_next">Надіслати наступну лекцію зараз</button>' : ''}
           ${o.chat_id ? '<button class="btn sec" data-a="send_lesson">Повторно надіслати лекцію…</button><button class="btn sec" data-a="message">Написати від імені бота</button>' : ''}
+          ${o.chat_id && o.kind !== 'consult' && !(o.promo_info && o.promo_info.used) ? '<button class="btn sec" data-a="send_promo">Надіслати промокод на консультацію</button>' : ''}
           ${o.paused ? '<button class="btn sec" data-a="resume">Продовжити розсилку</button>' : (o.activated_at && !o.done_at ? '<button class="btn sec" data-a="pause">Пауза</button>' : '')}
           ${o.link ? '<button class="btn sec" data-a="new_link">Нове посилання (інший Telegram)</button>' : ''}
           ${o.email && o.link ? '<button class="btn sec" data-a="resend_email">Надіслати лист повторно</button>' : ''}
@@ -253,6 +257,7 @@ $('#list').addEventListener('click', async (e) => {
   if (a === 'send_lesson') { const n = prompt('Номер лекції (1–5)'); if (!n) return; body.n = n; }
   if (a === 'new_link' && !confirm('Старе посилання перестане працювати, а прогрес почнеться заново після запуску бота за новим посиланням. Продовжити?')) return;
   if (a === 'send_next' && !confirm('Надіслати наступну лекцію прямо зараз?')) return;
+  if (a === 'send_promo' && !confirm('Надіслати учасниці пропозицію консультації з персональним промокодом? Якщо дійсний промокод уже є, буде надіслано його ж.')) return;
   b.disabled = true;
   const r = await api('action', body).catch(() => ({}));
   b.disabled = false;
