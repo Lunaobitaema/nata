@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Дякуємо за оплату — Наталя Коваленко</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--base:#2B2D20;--deep:#1B1C14;--cream:#F4EFE7;--sand:#CFBBA2;--gold:#E3C56E;--ink:#1B1C14}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(var(--base),var(--deep));color:var(--cream);font:16px/1.65 Montserrat,system-ui,sans-serif;display:grid;place-items:center;padding:32px 16px}
+main{max-width:560px;width:100%;text-align:center}
+.mark{width:72px;height:72px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;background:rgba(227,197,110,.14);box-shadow:0 0 0 2px rgba(227,197,110,.5)}
+.mark svg{width:34px;height:34px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+h1{font-size:clamp(1.5rem,5vw,2rem);line-height:1.25;margin:0 0 12px}
+p{margin:0 0 14px;color:rgba(244,239,231,.88)}
+.plan{color:var(--gold);font-weight:700}
+.buy{display:inline-block;margin:18px 0 8px;background:var(--cream);color:var(--ink);text-decoration:none;font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;padding:1.05em 2.2em;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.buy:hover{background:#fff}
+.box{text-align:left;margin:22px auto 0;padding:18px 22px;border-radius:16px;background:rgba(244,239,231,.06);max-width:460px}
+.box ul{margin:0;padding-left:1.2em}.box li{margin:6px 0}
+.small{font-size:.85rem;color:rgba(244,239,231,.65)}
+.spin{width:36px;height:36px;margin:8px auto 18px;border:3px solid rgba(244,239,231,.2);border-top-color:var(--gold);border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.test{display:inline-block;background:var(--gold);color:var(--ink);font-weight:700;font-size:.75rem;padding:3px 10px;border-radius:999px;margin-bottom:14px}
+a{color:var(--sand)}
+form{text-align:left;margin:22px auto 0;max-width:420px;padding:22px;border-radius:18px;background:rgba(244,239,231,.07);border:1px solid rgba(244,239,231,.16)}
+form label{display:block;font-weight:600;font-size:.92rem;margin:0 0 6px}
+form input{width:100%;font:500 1.05rem Montserrat,system-ui,sans-serif;padding:.8em 1em;border-radius:12px;border:2px solid rgba(244,239,231,.25);background:rgba(27,28,20,.6);color:var(--cream);margin-bottom:6px}
+form input:focus{outline:none;border-color:var(--gold)}
+form input.bad{border-color:#F08A8D}
+form .err{min-height:1.3em;font-size:.85rem;color:#F08A8D;margin:0 0 10px}
+form button{width:100%;margin-top:6px;background:var(--cream);color:var(--ink);border:0;cursor:pointer;font:700 .95rem Montserrat,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:1.05em 1.5em;border-radius:999px}
+form button:disabled{opacity:.6;cursor:wait}
+.req{color:var(--gold)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <section id="wait">
+    <div class="spin" aria-hidden="true"></div>
+    <h1>Перевіряємо оплату…</h1>
+    <p>Зазвичай це займає кілька секунд. Не закривайте сторінку.</p>
+  </section>
+
+  <section id="ok" hidden>
+    <span class="test" id="testBadge" hidden>ТЕСТОВА ОПЛАТА</span>
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h1>Дякуємо! Оплату отримано</h1>
+    <p><span class="plan" id="plan"></span></p>
+
+    <!-- оплата без промокоду: обовʼязкові контакти -->
+    <div id="contacts" hidden>
+      <p>Залиште, будь ласка, контакти — вони потрібні Наталі для звʼязку з вами.</p>
+      <form id="cform" novalidate>
+        <label for="phone">Номер телефону <span class="req">*</span></label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+380 …" required>
+        <p class="err" id="phoneErr"></p>
+        <label for="email">Email <span class="req">*</span></label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" required>
+        <p class="err" id="emailErr"></p>
+        <button id="csend" type="submit">Продовжити</button>
+        <p class="err" id="formErr" style="margin:10px 0 0;text-align:center"></p>
+      </form>
+    </div>
+
+    <!-- останній крок: Telegram -->
+    <div id="tg" hidden>
+      <p id="tgText">Останній крок: відкрийте Telegram-бот і натисніть «Start». Бот надішле підтвердження оплати та посилання на календар, де ви оберете зручний час консультації.</p>
+      <a class="buy" id="botBtn" href="#">Відкрити Telegram</a>
+      <p class="small">Посилання персональне. Немає Telegram? Встановіть його й поверніться на цю сторінку — посилання збережеться.</p>
+    </div>
+
+    <!-- оплата з промокодом: учасниця вже в боті -->
+    <div id="known" hidden>
+      <p>Підтвердження оплати та посилання на календар для вибору часу вже надійшли вам у Telegram-бот курсу.</p>
+      <a class="buy" id="knownBtn" href="#">Відкрити бот</a>
+    </div>
+
+    <div class="box">
+      <ul>
+        <li>Консультація проходить у Google Meet, 60 хвилин.</li>
+        <li>Посилання на зустріч ви отримаєте після запису на зручний час.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="fail" hidden>
+    <h1>Оплата не пройшла</h1>
+    <p>Кошти не списано, промокод (якщо ви його вводили) залишається дійсним. Спробуйте ще раз або іншою карткою. Якщо оплата європейською карткою не проходить, дозвольте платіж у застосунку банку.</p>
+    <a class="buy" href="/konsultatsiia/#oplata">Спробувати ще раз</a>
+  </section>
+
+  <section id="slow" hidden>
+    <h1>Оплата ще обробляється</h1>
+    <p>Підтвердження від платіжної системи поки не надійшло. Оновіть сторінку за хвилину.</p>
+    <p class="small">Якщо кошти списано, а підтвердження так і не зʼявилось, напишіть боту <a href="https://t.me/natalyakovalenko_bot">@natalyakovalenko_bot</a> — ми перевіримо оплату.</p>
+    <a class="buy" href="" onclick="location.reload();return false">Оновити</a>
+  </section>
+</main>
+<script>
+(function () {
+  var ref = new URLSearchParams(location.search).get('ref');
+  var key = 'nk_consult_ref';
+  try { if (ref) localStorage.setItem(key, ref); else ref = localStorage.getItem(key); } catch (e) {}
+  var $ = function (id) { return document.getElementById(id); };
+  var show = function (id) { ['wait', 'ok', 'fail', 'slow'].forEach(function (s) { $(s).hidden = s !== id; }); };
+  if (!ref) { show('slow'); return; }
+
+  function done(d) {
+    if (PLAN) $('plan').textContent = PLAN;
+    if (d.test) $('testBadge').hidden = false;
+    $('contacts').hidden = $('tg').hidden = $('known').hidden = true;
+    if (d.promo) {
+      $('known').hidden = false;
+      $('knownBtn').href = d.bot || 'https://t.me/natalyakovalenko_bot';
+    } else if (d.need_contacts) {
+      $('contacts').hidden = false;
+    } else {
+      $('tg').hidden = false;
+      $('botBtn').href = d.bot;
+      if (!d.calendar) $('tgText').textContent = 'Останній крок: відкрийте Telegram-бот і натисніть «Start». Бот надішле підтвердження оплати, а Наталя напише вам там, щоб узгодити зручний час консультації.';
+    }
+    show('ok');
+  }
+
+  $('cform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var phone = $('phone').value.trim(), email = $('email').value.trim(), okForm = true;
+    ['phone', 'email'].forEach(function (f) { $(f).classList.remove('bad'); $(f + 'Err').textContent = ''; });
+    $('formErr').textContent = '';
+    if (phone.replace(/\D/g, '').length < 9) { $('phone').classList.add('bad'); $('phoneErr').textContent = 'Вкажіть номер телефону з кодом країни'; okForm = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { $('email').classList.add('bad'); $('emailErr').textContent = 'Вкажіть правильну адресу email'; okForm = false; }
+    if (!okForm) return;
+    var btn = $('csend'); btn.disabled = true; btn.textContent = 'Зберігаємо…';
+    fetch('/api/consult/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ref: ref, phone: phone, email: email }) })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        btn.disabled = false; btn.textContent = 'Продовжити';
+        if (r.ok) { done({ bot: r.bot, calendar: CAL }); return; }
+        if (r.field) { $(r.field).classList.add('bad'); $(r.field + 'Err').textContent = r.error; }
+        else $('formErr').textContent = r.error || 'Не вдалося зберегти. Спробуйте ще раз.';
+      })
+      .catch(function () { btn.disabled = false; btn.textContent = 'Продовжити'; $('formErr').textContent = 'Немає зʼєднання. Спробуйте ще раз.'; });
+  });
+
+  var CAL = false, PLAN = '';
+  var tries = 0;
+  (function poll() {
+    fetch('/api/order?ref=' + encodeURIComponent(ref), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.status === 'paid') {
+          CAL = !!d.calendar;
+          PLAN = (d.plan || '') + (d.eur ? ' · ' + d.eur + ' €' : '');
+          done(d);
+        } else if (d.status === 'declined') {
+          show('fail');
+        } else if (++tries < 20) {
+          setTimeout(poll, 3000);
+        } else {
+          show('slow');
+        }
+      })
+      .catch(function () { if (++tries < 20) setTimeout(poll, 3000); else show('slow'); });
+  })();
+})();
+</script>
+</body>
+</html>

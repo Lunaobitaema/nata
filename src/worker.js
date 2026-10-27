@@ -5,8 +5,10 @@
 //   /api/wfp                — підтвердження оплати від WayForPay (serviceUrl)
 //   /api/order              — статус замовлення для сторінки «Дякуємо»
 //   /api/pay-methods        — які способи оплати підключені
-//   /api/promo              — перевірка промокоду на консультацію (для сторінки /promo/)
-//   /pay/consult            — оплата консультації за промокодом (сторінка /promo/, на сайті посилання немає)
+//   /api/promo              — ціни консультацій і перевірка промокоду (для сторінки /konsultatsiia/)
+//   /pay/consult            — оплата консультації або пакета (з промокодом учасниці курсу чи без)
+//   /api/consult/contact    — телефон і email клієнтки після оплати без промокоду
+//   /promo/                 — старе посилання з бота → /konsultatsiia/ (зберігає ?code=)
 //   /api/tg                 — повідомлення від Telegram (webhook бота)
 //   /api/setup              — одноразове підключення бота до сайту
 //   /admin, /api/admin/*    — адмінка
@@ -273,7 +275,10 @@ async function sendAccessEmail(env, order) {
   return r.ok;
 }
 
-// ───────────────────────── консультація: промокоди та оплата ─────────────────────────
+// ───────────────────────── консультації: промокоди та оплата ─────────────────────────
+// Одна консультація: повна ціна для всіх або promo_eur за дійсним промокодом учасниці курсу.
+// Пакет: однакова ціна для всіх, промокод не діє. Після оплати без промокоду клієнтка залишає телефон і email,
+// а потім відкриває бот (посилання з токеном) — бот надсилає підтвердження та посилання на календар.
 
 const CONSULT = COURSE.consult;
 const COURSE_ONLY = "COALESCE(kind, 'course') = 'course'";
@@ -295,13 +300,13 @@ async function issuePromo(env, { ref = null, chat_id, name = null, username = nu
 }
 
 const fmtDate = (ms) => new Intl.DateTimeFormat('uk-UA', { timeZone: COURSE.schedule.timezone, day: 'numeric', month: 'long' }).format(new Date(ms));
-const promoUrl = (env, code) => `${siteUrl(env)}${CONSULT.page}?code=${encodeURIComponent(code)}`;
+const consultPage = (env, code) => `${siteUrl(env)}${CONSULT.page}${code ? '?code=' + encodeURIComponent(code) : ''}`;
 
 async function sendPromoOffer(env, o) {
   const p = await issuePromo(env, { ref: o.ref, chat_id: o.chat_id, name: o.tg_name || o.name, username: o.tg_username, test: o.test ? 1 : 0 });
   const r = await say(env, o.chat_id, fill(CONSULT.texts.offer, { code: p.code, until: fmtDate(p.expires_at) }), {
     parse_mode: 'HTML',
-    reply_markup: { inline_keyboard: [[{ text: CONSULT.texts.offer_button, url: promoUrl(env, p.code) }]] },
+    reply_markup: { inline_keyboard: [[{ text: CONSULT.texts.offer_button, url: consultPage(env, p.code) }]] },
   });
   await logEvent(env, o.ref, 'promo', `${p.code} ${r.ok ? 'sent' : 'error ' + r.description}`);
   return { ok: !!r.ok, code: p.code, error: r.description };
@@ -341,29 +346,38 @@ const uahFor = (eur, rate) => Math.ceil(eur * rate);
 
 async function consultInfo(env) {
   const r = await eurRate(env);
-  const plans = Object.fromEntries(Object.entries(CONSULT.plans).map(([k, v]) => [k, { ...v, uah: r ? uahFor(v.eur, r.rate) : null }]));
+  const plans = Object.fromEntries(Object.entries(CONSULT.plans).map(([k, v]) => [k, {
+    ...v, uah: r ? uahFor(v.eur, r.rate) : null, promo_uah: r && v.promo_eur ? uahFor(v.promo_eur, r.rate) : null,
+  }]));
   return { plans, rate: r?.rate || null, rate_date: r?.date || null };
 }
+
+const backBtn = (code) => `<a class="btn" href="${esc(CONSULT.page)}${code ? '?code=' + encodeURIComponent(code) : ''}">Повернутися</a>`;
 
 async function startConsultPayment(env, url) {
   await db(env);
   const plan = url.searchParams.get('plan');
   const P = CONSULT.plans[plan];
-  const chk = await checkPromo(env, url.searchParams.get('code'));
-  const back = `<a class="btn" href="${esc(CONSULT.page)}${chk.promo ? '?code=' + encodeURIComponent(chk.promo.code) : ''}">Повернутися</a>`;
-  if (!P) return html(page('Оберіть варіант', `<p>Оберіть одну консультацію або пакет.</p>${back}`), 400);
-  if (!chk.ok) return html(page('Промокод недійсний', `<p>${esc(CONSULT.texts['promo_' + chk.reason] || 'Перевірте промокод.')}</p>${back}`), 400);
+  if (!P) return html(page('Оберіть варіант', `<p>Оберіть одну консультацію або пакет.</p>${backBtn()}`), 400);
+  // промокод діє лише на тариф із promo_eur (одна консультація); для пакета його ігноруємо
+  const rawCode = P.promo_eur ? normCode(url.searchParams.get('code')) : '';
+  let promo = null;
+  if (rawCode) {
+    const chk = await checkPromo(env, rawCode);
+    if (!chk.ok) return html(page('Промокод недійсний', `<p>${esc(CONSULT.texts['promo_' + chk.reason] || 'Перевірте промокод.')}</p><p>Ви можете повернутися й оплатити консультацію за повною ціною без промокоду.</p>${backBtn()}`), 400);
+    promo = chk.promo;
+  }
   const m = merchant(env, 'uah');
   const r = await eurRate(env);
   if (!m || !r) return html(page('Оплата тимчасово недоступна', `<p>Спробуйте трохи пізніше або напишіть боту <a href="https://t.me/${esc(botUser(env))}">@${esc(botUser(env))}</a>.</p>`), 503);
-  const p = chk.promo;
-  const amount = uahFor(P.eur, r.rate);
+  const eur = promo ? P.promo_eur : P.eur;
+  const amount = uahFor(eur, r.rate);
   const ref = `NK-CON-${Date.now().toString(36)}-${randomToken(4)}`;
   const token = randomToken(24);
   await run(env, `INSERT INTO orders (ref, token, method, amount, currency, status, test, created_at, source, kind, plan, promo, eur, name, tg_username)
-    VALUES (?, ?, 'uah', ?, 'UAH', 'created', ?, ?, 'promo', 'consult', ?, ?, ?, ?, ?)`,
-  ref, token, amount, m.test || p.test ? 1 : 0, now(), plan, p.code, P.eur, p.name || null, p.username || null);
-  await logEvent(env, ref, 'consult', `${plan} ${P.eur} EUR = ${amount} UAH (rate ${r.rate}), promo ${p.code}`);
+    VALUES (?, ?, 'uah', ?, 'UAH', 'created', ?, ?, ?, 'consult', ?, ?, ?, ?, ?)`,
+  ref, token, amount, m.test || promo?.test ? 1 : 0, now(), promo ? 'promo' : 'consult-page', plan, promo?.code || null, eur, promo?.name || null, promo?.username || null);
+  await logEvent(env, ref, 'consult', `${plan} ${eur} EUR = ${amount} UAH (rate ${r.rate})${promo ? ', promo ' + promo.code : ''}`);
   const site = siteUrl(env);
   const t = Math.floor(now() / 1000);
   const f = {
@@ -389,26 +403,89 @@ async function startConsultPayment(env, url) {
 <script>document.getElementById('f').submit()</script>`));
 }
 
-// після підтвердженої оплати консультації: погасити промокод, повідомити Наталю та учасницю
-async function consultPaid(env, order, d) {
-  const used = await run(env, 'UPDATE promos SET used_at = ?, used_ref = ? WHERE code = ? AND used_at IS NULL', now(), order.ref, order.promo);
-  if (!used.meta?.changes) await logEvent(env, order.ref, 'promo', `code ${order.promo} was already used — paid anyway, check manually`);
-  const p = await one(env, 'SELECT * FROM promos WHERE code = ?', order.promo);
-  const course = p?.ref ? await one(env, 'SELECT * FROM orders WHERE ref = ?', p.ref) : null;
-  const P = CONSULT.plans[order.plan] || {};
-  const who = [p?.name || order.name, p?.username ? '@' + p.username : '', course?.email, course?.phone || d.phone].filter(Boolean).join(' · ');
-  await notifyAdmins(env, `💼 Оплачено консультацію${order.test ? ' (ТЕСТ)' : ''}: ${P.title || order.plan}
-` +
-    `Учасниця курсу: ${who || 'невідомо'}
-` +
-    `Сума: ${order.eur} € (${d.amount} ${d.currency}), промокод ${order.promo} — знижка для учасниці курсу
-` +
-    `Telegram: ${p?.username ? 'https://t.me/' + p.username : (p?.chat_id ? 'є чат у боті, напишіть їй через адмінку' : 'немає')}
-` +
-    `Замовлення ${order.ref}
+const consultBotLink = (env, order) => botLink(env, 'c_' + order.token);
+const planTitle = (order) => CONSULT.plans[order.plan]?.title || order.plan || 'консультація';
+const scheduleText = () => (CONSULT.calendar_url ? fill(CONSULT.texts.schedule_link, { calendar: CONSULT.calendar_url }) : CONSULT.texts.schedule_manual);
 
-Зв'яжіться з нею, щоб узгодити час консультації.`);
-  if (p?.chat_id) await say(env, p.chat_id, fill(CONSULT.texts.paid, { plan: P.title || '' }));
+// повідомлення клієнтці: підтвердження оплати + посилання на календар
+async function sendConsultConfirmation(env, order, chat_id) {
+  const r = await say(env, chat_id, fill(CONSULT.texts.paid, { plan: planTitle(order), schedule: scheduleText() }),
+    CONSULT.calendar_url ? { reply_markup: { inline_keyboard: [[{ text: '🗓 Обрати час консультації', url: CONSULT.calendar_url }]] } } : {});
+  await logEvent(env, order.ref, 'consult', `confirmation to chat ${chat_id}: ${r.ok ? 'ok' : r.description}`);
+  return r.ok;
+}
+
+async function sendConsultEmail(env, order) {
+  if (!env.RESEND_API_KEY || !order.email) return false;
+  const vars = { plan: planTitle(order), schedule: scheduleText(), bot: consultBotLink(env, order), site: siteUrl(env) };
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ from: env.MAIL_FROM || 'Наталя Коваленко <kurs@natalyakovalenko.com.ua>', to: [order.email], subject: CONSULT.texts.email_subject, text: fill(CONSULT.texts.email_body, vars) }),
+  });
+  await logEvent(env, order.ref, 'email', r.ok ? 'consult sent' : `consult error ${r.status}`);
+  return r.ok;
+}
+
+// після підтвердженої оплати консультації
+async function consultPaid(env, order, d) {
+  const P = CONSULT.plans[order.plan] || {};
+  const head = `💼 Оплачено: ${P.title || order.plan}${order.test ? ' (ТЕСТ)' : ''}\nСума: ${order.eur} € (${d.amount} ${d.currency})`;
+  if (order.promo) {
+    // оплата з промокодом: клієнтка відома з курсу, контакти не запитуємо, підтвердження — одразу в бот
+    const used = await run(env, 'UPDATE promos SET used_at = ?, used_ref = ? WHERE code = ? AND used_at IS NULL', now(), order.ref, order.promo);
+    if (!used.meta?.changes) await logEvent(env, order.ref, 'promo', `code ${order.promo} was already used — paid anyway, check manually`);
+    const p = await one(env, 'SELECT * FROM promos WHERE code = ?', order.promo);
+    const course = p?.ref ? await one(env, 'SELECT * FROM orders WHERE ref = ?', p.ref) : null;
+    await run(env, 'UPDATE orders SET chat_id = ?, tg_username = COALESCE(tg_username, ?), tg_name = ?, email = COALESCE(email, ?), phone = COALESCE(phone, ?), activated_at = ? WHERE ref = ?',
+      p?.chat_id || null, p?.username || null, p?.name || null, course?.email || null, course?.phone || null, now(), order.ref);
+    const who = [p?.name, p?.username ? '@' + p.username : '', course?.email, course?.phone].filter(Boolean).join(' · ');
+    await notifyAdmins(env, `${head}, промокод ${order.promo} (знижка учасниці курсу)\n` +
+      `Учасниця курсу: ${who || 'невідомо'}\n` +
+      `Telegram: ${p?.username ? 'https://t.me/' + p.username : 'є чат у боті — напишіть через адмінку'}\n` +
+      `Замовлення ${order.ref}\n\n${CONSULT.calendar_url ? 'Їй надіслано посилання на календар.' : 'Звʼяжіться з нею, щоб узгодити час.'}`);
+    if (p?.chat_id) await sendConsultConfirmation(env, order, p.chat_id);
+  } else {
+    // оплата без промокоду: на сторінці «Дякуємо» клієнтка залишить телефон і email, потім відкриє бот
+    await notifyAdmins(env, `${head}, без промокоду\nКартка: ${d.cardPan || '—'}\nЗамовлення ${order.ref}\n\nКлієнтка зараз заповнює контакти на сторінці після оплати — надішлю їх окремо.`);
+  }
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const normPhone = (s) => String(s || '').replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
+
+// контакти після оплати без промокоду: телефон і email (обовʼязкові)
+async function consultContact(env, request) {
+  await db(env);
+  const b = await request.json().catch(() => ({}));
+  const o = await one(env, "SELECT * FROM orders WHERE ref = ? AND kind = 'consult'", String(b.ref || ''));
+  if (!o) return json({ ok: false, error: 'Замовлення не знайдено' }, 404);
+  if (o.status !== 'paid') return json({ ok: false, error: 'Оплату ще не підтверджено' }, 409);
+  if (o.promo) return json({ ok: true, bot: consultBotLink(env, o) });
+  const phone = normPhone(b.phone), email = String(b.email || '').trim().toLowerCase();
+  if (phone.replace(/\D/g, '').length < 9) return json({ ok: false, field: 'phone', error: 'Вкажіть номер телефону з кодом країни' }, 400);
+  if (!EMAIL_RE.test(email) || email.length > 120) return json({ ok: false, field: 'email', error: 'Вкажіть правильну адресу email' }, 400);
+  const first = !o.email;
+  await run(env, 'UPDATE orders SET phone = ?, email = ? WHERE ref = ?', phone, email, o.ref);
+  if (first) {
+    await logEvent(env, o.ref, 'consult', 'contacts received');
+    await notifyAdmins(env, `📇 Контакти клієнтки (${planTitle(o)}, ${o.eur} €):\nТелефон: ${phone}\nEmail: ${email}\nЗамовлення ${o.ref}`);
+    await sendConsultEmail(env, { ...o, phone, email }).catch((e) => logEvent(env, o.ref, 'email', `error ${e.message}`));
+  }
+  return json({ ok: true, bot: consultBotLink(env, o) });
+}
+
+// /start c_<токен> — клієнтка відкрила бот зі сторінки після оплати консультації
+async function consultStart(env, chat, from, name, token) {
+  const o = await one(env, "SELECT * FROM orders WHERE token = ? AND kind = 'consult' AND status = 'paid'", token);
+  if (!o) { await say(env, chat, CONSULT.texts.bad_consult_token); return; }
+  const firstTime = !o.chat_id;
+  await run(env, 'UPDATE orders SET chat_id = ?, tg_username = ?, tg_name = ?, activated_at = COALESCE(activated_at, ?) WHERE ref = ?',
+    chat, from.username || o.tg_username || null, name, now(), o.ref);
+  await sendConsultConfirmation(env, o, chat);
+  if (firstTime && !o.promo) {
+    await notifyAdmins(env, `💬 Клієнтка відкрила бот: ${name}${from.username ? ' (@' + from.username + ', https://t.me/' + from.username + ')' : ''}\n${planTitle(o)} · ${[o.phone, o.email].filter(Boolean).join(' · ')}\nЗамовлення ${o.ref}`);
+  }
 }
 
 // ───────────────────────── курс: розсилка ─────────────────────────
@@ -581,6 +658,7 @@ async function handleUpdate(env, u) {
   // /start з токеном покупки
   if (text.startsWith('/start')) {
     const token = text.split(/\s+/)[1];
+    if (token && token.startsWith('c_')) { await consultStart(env, chat, from, name, token.slice(2)); return; }
     if (!token) {
       const mine = await one(env, `SELECT * FROM orders WHERE chat_id = ? AND ${COURSE_ONLY} ORDER BY created_at DESC LIMIT 1`, chat);
       if (mine && mine.done_at) await say(env, chat, COURSE.texts.course_done);
@@ -831,6 +909,9 @@ export default {
         return json({ ok: c.ok, reason: c.reason || null, until: c.promo ? fmtDate(c.promo.expires_at) : null, ...info });
       }
       if (p === '/pay/consult' || p === '/pay/consult/') return startConsultPayment(env, url);
+      if (p === '/api/consult/contact' && request.method === 'POST') return consultContact(env, request);
+      // перші промокоди розсилались із посиланням /promo/ — переадресація на нову сторінку
+      if (p === '/promo' || p.startsWith('/promo/')) return Response.redirect(`${url.origin}${CONSULT.page}${p.endsWith('dyakuyu.html') ? 'dyakuyu.html' : ''}${url.search}`, 301);
 
       const pay = p.match(/^\/pay\/(uah|eur)\/?$/);
       if (pay) return startPayment(env, pay[1], url);
@@ -846,9 +927,15 @@ export default {
 
       if (p === '/api/order') {
         await db(env);
-        const o = await one(env, 'SELECT status, token, test, kind, plan FROM orders WHERE ref = ?', url.searchParams.get('ref') || '');
+        const o = await one(env, 'SELECT * FROM orders WHERE ref = ?', url.searchParams.get('ref') || '');
         if (!o) return json({ status: 'unknown' }, 404);
-        if (o.kind === 'consult') return json({ status: o.status, test: !!o.test, kind: 'consult', plan: CONSULT.plans[o.plan]?.title || null, bot: `https://t.me/${botUser(env)}` });
+        if (o.kind === 'consult') {
+          const paidOk = o.status === 'paid';
+          const contactsDone = !!o.promo || !!o.email;
+          return json({ status: o.status, test: !!o.test, kind: 'consult', plan: planTitle(o), eur: o.eur, promo: !!o.promo,
+            need_contacts: paidOk && !contactsDone, telegram_sent: paidOk && !!o.promo && !!o.chat_id,
+            bot: paidOk && contactsDone ? consultBotLink(env, o) : null, calendar: !!CONSULT.calendar_url });
+        }
         const ok = ['paid', 'manual'].includes(o.status);
         return json({ status: o.status, test: !!o.test, bot: ok ? botLink(env, o.token) : null });
       }

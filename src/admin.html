@@ -222,7 +222,7 @@ function renderList() {
     const who = o.name || o.tg_name || o.email || o.phone || 'Без імені';
     return `<div class="client" data-ref="${esc(o.ref)}">
       <div class="top"><span class="name">${esc(who)}</span>${stateOf(o)[1]}${o.test ? '<span class="badge b-test">тест</span>' : ''}${prog}</div>
-      <div class="meta">${[money(o.amount, o.currency), dt(o.paid_at || o.created_at), o.email, o.phone, o.tg_username ? '@' + o.tg_username : '', o.method === 'manual' ? 'додано вручну' : '', o.kind === 'consult' ? `${o.plan_title} · ${o.eur} € · промокод ${o.promo}` : ''].filter(Boolean).map(esc).join(' · ')}</div>
+      <div class="meta">${[money(o.amount, o.currency), dt(o.paid_at || o.created_at), o.email, o.phone, o.tg_username ? '@' + o.tg_username : '', o.method === 'manual' ? 'додано вручну' : '', o.kind === 'consult' ? `${o.plan_title} · ${o.eur} € · ${o.promo ? 'промокод ' + o.promo : 'без промокоду'}${o.chat_id ? '' : ' · ще не відкрила бот'}` : ''].filter(Boolean).map(esc).join(' · ')}</div>
       ${o.promo_info ? `<div class="meta">🎁 Промокод на консультацію ${esc(o.promo_info.code)} — ${o.promo_info.used ? 'використано' : 'діє до ' + esc(o.promo_info.until)}</div>` : ''}
       ${o.next_label && !o.paused && !o.done_at ? `<div class="meta">Наступна лекція: ${esc(o.next_label)}</div>` : ''}
       ${o.note ? `<div class="meta">📝 ${esc(o.note)}</div>` : ''}
