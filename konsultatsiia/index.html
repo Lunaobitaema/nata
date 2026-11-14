@@ -85,6 +85,19 @@ a{color:inherit}
 .pay small{display:block;font-weight:500;font-size:.78rem;letter-spacing:.02em;text-transform:none;opacity:.8;margin-top:2px}
 .note{max-width:640px;margin:26px auto 0;font-size:.88rem;opacity:.75}
 
+/* відгуки */
+.g3{background:linear-gradient(var(--mid),var(--base))}
+.reviews{overflow:hidden}
+.rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0;padding:10px max(20px,calc((100% - 920px)/2)) 22px;list-style:none;scrollbar-width:thin;scrollbar-color:var(--sand) transparent}
+.rail li{flex:none;width:min(82vw,390px);scroll-snap-align:center;background:var(--cream);color:var(--ink);border-radius:22px;padding:22px 26px 24px;display:flex;flex-direction:column;box-shadow:0 0 26px rgba(207,187,162,.25)}
+.rail .q{font:700 5rem/.7 Georgia,"Times New Roman",serif;color:var(--clay);height:.55em;margin-bottom:10px}
+.rail blockquote{margin:0 0 18px;font-size:.98rem;line-height:1.6;color:var(--ink)}
+.rail blockquote b{font-weight:600;background:linear-gradient(transparent 62%,rgba(227,197,110,.55) 0)}
+.rail .who{margin:auto 0 0;padding-top:14px;border-top:1px solid var(--line-l);font-size:.85rem;color:var(--ink-soft)}
+.railnav{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:4px;font-size:.92rem;color:var(--sand)}
+.railnav button{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--sand);background:none;color:var(--sand);font:inherit;font-size:1.2rem;cursor:pointer;transition:background .2s,color .2s}
+.railnav button:hover{background:var(--sand);color:var(--ink)}
+
 footer{background:var(--deep);font-size:.85rem;padding:26px 0 36px;text-align:center}
 footer nav{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-bottom:10px}
 footer p{opacity:.7;margin:0}
@@ -142,6 +155,18 @@ footer p{opacity:.7;margin:0}
   </div>
 </section>
 
+<section class="band g3 reviews" id="vidguky">
+  <div class="wrap"><h2 class="center">Відгуки клієнток</h2></div>
+  <ul class="rail" id="rail" tabindex="0" aria-label="Відгуки клієнток">
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Я ще ніколи не відчувала <b>такої близькості у спілкуванні з собою</b>, як на консультації. Раніше мій внутрішній голос казав: «Терпи тихенько і не висовуйся, ти заважаєш». А тепер: <b>«Привіт, я з тобою, ти не одна. Як тебе порадувати, моя люба?»</b></blockquote><p class="who">Після консультації</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Уже після першої консультації <b>я відчула легкість, і з’явилися сили поговорити з чоловіком</b> та зробити перший крок до вирішення проблеми. Зараз відчуваю внутрішню впевненість, спокій і розумію, куди йти далі. Шкодую, що не прийшла раніше.</blockquote><p class="who">Після першої консультації</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Лише одна година консультації зробила <b>прорив у моїй свідомості</b>. Зараз я набагато спокійніше реагую на ситуації, у яких раніше був би вибух емоцій. <b>Вдома стало затишно, чоловік радіє.</b></blockquote><p class="who">Одна консультація</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Я довго мучилася сумнівами: чи правильно роблю, чи не шкодуватиму — аж до головного болю. Після консультації <b>утвердилася в рішенні</b> й уперше за довгий час три дні поспіль висипалася. <b>Мені стало так легко!</b> Повертається відчуття внутрішньої радості.</blockquote><p class="who">Одна консультація</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Стосунки не були моїм основним запитом: я хотіла покращити контакт із собою і менше себе критикувати. Згодом зрозуміла, що те, що дратувало мене в партнері, підсвічувало мої власні придушені бажання. <b>У стосунках стало менше критики, більше розуміння і близькості.</b> Наші відносини стали ще міцнішими.</blockquote><p class="who">Олеся, 1,5 року терапії</p></li>
+  </ul>
+  <div class="railnav"><button type="button" data-rail="-1" aria-label="Попередній відгук">←</button><span>Гортайте вбік</span><button type="button" data-rail="1" aria-label="Наступний відгук">→</button></div>
+</section>
+
 <section class="band g1" id="oplata">
   <div class="wrap">
     <h2 class="center">Вартість</h2>
@@ -182,6 +207,11 @@ footer p{opacity:.7;margin:0}
   </div>
 </footer>
 
+<script>
+(() => { const rail = document.getElementById('rail');
+  document.querySelectorAll('[data-rail]').forEach(b => b.addEventListener('click', () => {
+    rail.scrollBy({ left: (rail.querySelector('li').offsetWidth + 16) * +b.dataset.rail, behavior: 'smooth' }); })); })();
+</script>
 <script>
 (function () {
   var input = document.getElementById('code'), status = document.getElementById('status');
