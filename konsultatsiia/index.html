@@ -89,12 +89,13 @@ a{color:inherit}
 .g3{background:linear-gradient(var(--mid),var(--base))}
 .reviews{overflow:hidden}
 .rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0;padding:10px max(20px,calc((100% - 920px)/2)) 22px;list-style:none;scrollbar-width:thin;scrollbar-color:var(--sand) transparent}
-.rail li{flex:none;width:min(82vw,390px);scroll-snap-align:center;background:var(--cream);color:var(--ink);border-radius:22px;padding:22px 26px 24px;display:flex;flex-direction:column;box-shadow:0 0 26px rgba(207,187,162,.25)}
+.rail li{flex:none;height:340px;width:min(82vw,390px);scroll-snap-align:center;background:var(--cream);color:var(--ink);border-radius:22px;padding:22px 26px 24px;display:flex;flex-direction:column;box-shadow:0 0 26px rgba(207,187,162,.25)}
 .rail li.wide{width:min(86vw,600px)}
-.rail .q{font:700 5rem/.7 Georgia,"Times New Roman",serif;color:var(--clay);height:.55em;margin-bottom:10px}
-.rail blockquote{margin:0 0 18px;font-size:.98rem;line-height:1.6;color:var(--ink)}
+.rail .q{flex:none;font:700 4rem/.7 Georgia,"Times New Roman",serif;color:var(--clay);height:.55em;margin-bottom:8px}
+.rail blockquote{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:8px;margin:0 -8px 14px 0;scrollbar-width:thin;scrollbar-color:var(--sand) transparent;font-size:.98rem;line-height:1.6;color:var(--ink)}
 .rail blockquote b{font-weight:600;background:linear-gradient(transparent 62%,rgba(227,197,110,.55) 0)}
-.rail .who{margin:auto 0 0;padding-top:14px;border-top:1px solid var(--line-l);font-size:.85rem;color:var(--ink-soft)}
+.rail blockquote.more{-webkit-mask-image:linear-gradient(#000 78%,transparent);mask-image:linear-gradient(#000 78%,transparent)}
+.rail .who{flex:none;margin:auto 0 0;padding-top:14px;border-top:1px solid var(--line-l);font-size:.85rem;color:var(--ink-soft)}
 .railnav{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:4px;font-size:.92rem;color:var(--sand)}
 .railnav button{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--sand);background:none;color:var(--sand);font:inherit;font-size:1.2rem;cursor:pointer;transition:background .2s,color .2s}
 .railnav button:hover{background:var(--sand);color:var(--ink)}
@@ -157,14 +158,14 @@ footer p{opacity:.7;margin:0}
 </section>
 
 <section class="band g3 reviews" id="vidguky">
-  <div class="wrap"><h2 class="center">Відгуки клієнток</h2></div>
-  <ul class="rail" id="rail" tabindex="0" aria-label="Відгуки клієнток">
-      <li><div class="q" aria-hidden="true">“</div><blockquote>Я ще ніколи не відчувала <b>такої близькості у спілкуванні з собою</b>, як на консультації. Раніше мій внутрішній голос казав: «Терпи тихенько і не висовуйся, ти заважаєш». А тепер: <b>«Привіт, я з тобою, ти не одна. Як тебе порадувати, моя люба?»</b></blockquote><p class="who">Після року терапії</p></li>
+  <div class="wrap"><h2 class="center">Відгуки клієнтів</h2></div>
+  <ul class="rail" id="rail" tabindex="0" aria-label="Відгуки клієнтів">
       <li><div class="q" aria-hidden="true">“</div><blockquote>Уже після першої консультації <b>я відчула легкість, і з’явилися сили поговорити з чоловіком</b> та зробити перший крок до вирішення проблеми. Зараз відчуваю внутрішню впевненість, спокій і розумію, куди йти далі. Шкодую, що не прийшла раніше.</blockquote><p class="who">Після першої консультації</p></li>
       <li><div class="q" aria-hidden="true">“</div><blockquote>Лише одна година консультації зробила <b>прорив у моїй свідомості</b>. Зараз я набагато спокійніше реагую на ситуації, у яких раніше був би вибух емоцій. <b>Вдома стало затишно, чоловік радіє.</b></blockquote><p class="who">Одна консультація</p></li>
-      <li><div class="q" aria-hidden="true">“</div><blockquote>Я довго мучилася сумнівами: чи правильно роблю, чи не шкодуватиму — аж до головного болю. Після консультації <b>утвердилася в думці, що рішення розійтися з чоловіком — правильне</b>, і вперше за довгий час три дні поспіль висипалася. <b>Мені стало так легко!</b> Повертається відчуття внутрішньої радості.</blockquote><p class="who">Одна консультація</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Я ще ніколи не відчувала <b>такої близькості у спілкуванні з собою</b>, як на консультації. Раніше мій внутрішній голос казав: «Терпи тихенько і не висовуйся, ти заважаєш». А тепер: <b>«Привіт, я з тобою, ти не одна. Як тебе порадувати, моя люба?»</b></blockquote><p class="who">Після року терапії</p></li>
       <li class="wide"><div class="q" aria-hidden="true">“</div><blockquote>Коли я почала роботу з Наталею, стосунки в парі не були моїм основним запитом: я хотіла покращити контакт із собою і менше себе критикувати. Я майже 7 років у стосунках і вважала себе щасливою, але зрозуміла, що <b>не завжди була відкритою і щирою з партнером</b> — боялася проявити слабкість і сказати про свої бажання. Те, що дратувало мене в його поведінці, насправді підсвічувало мої власні придушені бажання й емоції. Я навчилася краще розуміти себе і проявляти це назовні. <b>У стосунках стало менше критики, більше розуміння і близькості.</b> Я стала більше поважати його кордони й свободу, а він прийняв мене в різних проявах, чого я раніше боялася. <b>Ми вийшли на новий рівень близькості, і наші відносини стали ще міцнішими.</b></blockquote><p class="who">Клієнтка, 1,5 року терапії</p></li>
-      <li><div class="q" aria-hidden="true">“</div><blockquote>За 10 сесій ми не просто зрозуміли, у чому наша проблема, а <b>нарешті почули одне одного</b>. Останнім часом ми майже не могли поговорити без сварки — тепер побачили, які потреби й почуття стояли за конфліктами. <b>Зараз відчуваємо більше спокою, любові та радості від спілкування.</b></blockquote><p class="who">Пара, 10 сесій</p></li>
+      <li><div class="q" aria-hidden="true">“</div><blockquote>Я довго мучилася сумнівами: чи правильно роблю, чи не шкодуватиму — аж до головного болю. Після консультації <b>утвердилася в думці, що рішення розійтися з чоловіком — правильне</b>, і вперше за довгий час три дні поспіль висипалася. <b>Мені стало так легко!</b> Повертається відчуття внутрішньої радості.</blockquote><p class="who">Одна консультація</p></li>
+      <li class="wide"><div class="q" aria-hidden="true">“</div><blockquote>Ми дуже вдячні вам за роботу, яку ми разом провели. За 10 сесій ми не просто зрозуміли, у чому наша проблема, а <b>нарешті почули одне одного</b>. Кілька років наші стосунки поступово погіршувалися, і останнім часом ми майже не могли поговорити без сварки. Завдяки нашій роботі ми побачили, які потреби й почуття стояли за цими конфліктами, і зрозуміли, що <b>у нас набагато більше спільного, ніж розбіжностей</b>. Навчившись чути одне одного, ми почали діяти по-іншому. За ці 10 тижнів наші стосунки значно покращилися: <b>зараз ми відчуваємо більше спокою, любові та радості від спілкування одне з одним.</b></blockquote><p class="who">Пара, 10 сесій</p></li>
   </ul>
   <div class="railnav"><button type="button" data-rail="-1" aria-label="Попередній відгук">←</button><span>Гортайте вбік</span><button type="button" data-rail="1" aria-label="Наступний відгук">→</button></div>
 </section>
@@ -212,7 +213,11 @@ footer p{opacity:.7;margin:0}
 <script>
 (() => { const rail = document.getElementById('rail');
   document.querySelectorAll('[data-rail]').forEach(b => b.addEventListener('click', () => {
-    rail.scrollBy({ left: (rail.querySelector('li').offsetWidth + 16) * +b.dataset.rail, behavior: 'smooth' }); })); })();
+    rail.scrollBy({ left: (rail.querySelector('li').offsetWidth + 16) * +b.dataset.rail, behavior: 'smooth' }); })); 
+  /* довгі відгуки прокручуються всередині картки; знизу — згасання, поки не дочитано */
+  const fade = q => q.classList.toggle('more', q.scrollHeight - q.clientHeight - q.scrollTop > 4);
+  rail.querySelectorAll('blockquote').forEach(q => { fade(q); q.addEventListener('scroll', () => fade(q), { passive: true }); });
+  addEventListener('resize', () => rail.querySelectorAll('blockquote').forEach(fade)); })();
 </script>
 <script>
 (function () {
