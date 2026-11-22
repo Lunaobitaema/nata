@@ -6,7 +6,8 @@
 //   /api/order              — статус замовлення для сторінки «Дякуємо»
 //   /api/pay-methods        — які способи оплати підключені
 //   /api/promo              — ціни консультацій і перевірка промокоду (для сторінки /konsultatsiia/)
-//   /pay/consult            — оплата консультації або пакета (з промокодом учасниці курсу чи без)
+//   /pay/consult            — оплата консультації або пакета (з промокодом учасниці курсу чи без);
+//                             plan=client&qty=N — сторінка /forclients/: 1850 грн × N (1…10)
 //   /api/consult/contact    — телефон і email клієнтки після оплати без промокоду
 //   /promo/                 — старе посилання з бота → /konsultatsiia/ (зберігає ?code=)
 //   /api/tg                 — повідомлення від Telegram (webhook бота)
@@ -130,7 +131,7 @@ async function db(env) {
       env.DB.prepare('CREATE INDEX IF NOT EXISTS promos_chat ON promos(chat_id)'),
     ]);
     // нові колонки замовлень: kind = 'course' | 'consult', plan, promo, eur — сума в євро для консультацій
-    for (const col of ['kind TEXT', 'plan TEXT', 'promo TEXT', 'eur REAL']) {
+    for (const col of ['kind TEXT', 'plan TEXT', 'promo TEXT', 'eur REAL', 'qty INTEGER']) {
       await env.DB.prepare(`ALTER TABLE orders ADD COLUMN ${col}`).run().catch(() => {});
     }
     schemaReady = true;
@@ -347,12 +348,12 @@ const uahFor = (eur, rate) => Math.ceil(eur * rate);
 async function consultInfo(env) {
   const r = await eurRate(env);
   const plans = Object.fromEntries(Object.entries(CONSULT.plans).map(([k, v]) => [k, {
-    ...v, uah: r ? uahFor(v.eur, r.rate) : null, promo_uah: r && v.promo_eur ? uahFor(v.promo_eur, r.rate) : null,
+    ...v, uah: v.uah || (r && v.eur ? uahFor(v.eur, r.rate) : null), promo_uah: r && v.promo_eur ? uahFor(v.promo_eur, r.rate) : null,
   }]));
   return { plans, rate: r?.rate || null, rate_date: r?.date || null };
 }
 
-const backBtn = (code) => `<a class="btn" href="${esc(CONSULT.page)}${code ? '?code=' + encodeURIComponent(code) : ''}">Повернутися</a>`;
+const backBtn = (code, pg) => `<a class="btn" href="${esc(pg || CONSULT.page)}${code ? '?code=' + encodeURIComponent(code) : ''}">Повернутися</a>`;
 
 async function startConsultPayment(env, url) {
   await db(env);
@@ -368,16 +369,19 @@ async function startConsultPayment(env, url) {
     promo = chk.promo;
   }
   const m = merchant(env, 'uah');
-  const r = await eurRate(env);
-  if (!m || !r) return html(page('Оплата тимчасово недоступна', `<p>Спробуйте трохи пізніше або напишіть боту <a href="https://t.me/${esc(botUser(env))}">@${esc(botUser(env))}</a>.</p>`), 503);
-  const eur = promo ? P.promo_eur : P.eur;
-  const amount = uahFor(eur, r.rate);
-  const ref = `NK-CON-${Date.now().toString(36)}-${randomToken(4)}`;
+  // тариф із фіксованою ціною в гривнях (сторінка /forclients/): кількість 1…max_qty, без промокоду й курсу євро
+  const fixed = !!P.uah;
+  const qty = fixed ? Math.min(Math.max(parseInt(url.searchParams.get('qty'), 10) || 1, 1), P.max_qty || 1) : 1;
+  const r = fixed ? null : await eurRate(env);
+  if (!m || (!fixed && !r)) return html(page('Оплата тимчасово недоступна', `<p>Спробуйте трохи пізніше або напишіть боту <a href="https://t.me/${esc(botUser(env))}">@${esc(botUser(env))}</a>.</p>`), 503);
+  const eur = fixed ? null : (promo ? P.promo_eur : P.eur);
+  const amount = fixed ? P.uah * qty : uahFor(eur, r.rate);
+  const ref = `${fixed ? 'NK-CLI' : 'NK-CON'}-${Date.now().toString(36)}-${randomToken(4)}`;
   const token = randomToken(24);
-  await run(env, `INSERT INTO orders (ref, token, method, amount, currency, status, test, created_at, source, kind, plan, promo, eur, name, tg_username)
-    VALUES (?, ?, 'uah', ?, 'UAH', 'created', ?, ?, ?, 'consult', ?, ?, ?, ?, ?)`,
-  ref, token, amount, m.test || promo?.test ? 1 : 0, now(), promo ? 'promo' : 'consult-page', plan, promo?.code || null, eur, promo?.name || null, promo?.username || null);
-  await logEvent(env, ref, 'consult', `${plan} ${eur} EUR = ${amount} UAH (rate ${r.rate})${promo ? ', promo ' + promo.code : ''}`);
+  await run(env, `INSERT INTO orders (ref, token, method, amount, currency, status, test, created_at, source, kind, plan, promo, eur, name, tg_username, qty)
+    VALUES (?, ?, 'uah', ?, 'UAH', 'created', ?, ?, ?, 'consult', ?, ?, ?, ?, ?, ?)`,
+  ref, token, amount, m.test || promo?.test ? 1 : 0, now(), promo ? 'promo' : (fixed ? 'forclients' : 'consult-page'), plan, promo?.code || null, eur, promo?.name || null, promo?.username || null, qty);
+  await logEvent(env, ref, 'consult', fixed ? `${plan} ${qty} × ${P.uah} = ${amount} UAH` : `${plan} ${eur} EUR = ${amount} UAH (rate ${r.rate})${promo ? ', promo ' + promo.code : ''}`);
   const site = siteUrl(env);
   const t = Math.floor(now() / 1000);
   const f = {
@@ -390,8 +394,8 @@ async function startConsultPayment(env, url) {
     amount: String(amount),
     currency: 'UAH',
     'productName[]': CONSULT.payment_purpose,
-    'productPrice[]': String(amount),
-    'productCount[]': '1',
+    'productPrice[]': String(fixed ? P.uah : amount),
+    'productCount[]': String(qty),
     returnUrl: `${site}/pay/return?ref=${encodeURIComponent(ref)}`,
     serviceUrl: `${site}/api/wfp`,
     language: 'UA',
@@ -404,7 +408,8 @@ async function startConsultPayment(env, url) {
 }
 
 const consultBotLink = (env, order) => botLink(env, 'c_' + order.token);
-const planTitle = (order) => CONSULT.plans[order.plan]?.title || order.plan || 'консультація';
+const planTitle = (order) => (CONSULT.plans[order.plan]?.title || order.plan || 'консультація') + (order.qty > 1 ? ` × ${order.qty}` : '');
+const sumText = (order) => order.eur ? `${order.eur} € (${order.amount} грн)` : `${order.amount} грн`;
 const scheduleText = () => (CONSULT.calendar_url ? fill(CONSULT.texts.schedule_link, { calendar: CONSULT.calendar_url }) : CONSULT.texts.schedule_manual);
 
 // повідомлення клієнтці: підтвердження оплати + посилання на календар
@@ -429,8 +434,7 @@ async function sendConsultEmail(env, order) {
 
 // після підтвердженої оплати консультації
 async function consultPaid(env, order, d) {
-  const P = CONSULT.plans[order.plan] || {};
-  const head = `💼 Оплачено: ${P.title || order.plan}${order.test ? ' (ТЕСТ)' : ''}\nСума: ${order.eur} € (${d.amount} ${d.currency})`;
+  const head = `💼 Оплачено: ${planTitle(order)}${order.test ? ' (ТЕСТ)' : ''}\nСума: ${order.eur ? `${order.eur} € (${d.amount} ${d.currency})` : `${d.amount} ${d.currency}`}`;
   if (order.promo) {
     // оплата з промокодом: клієнтка відома з курсу, контакти не запитуємо, підтвердження — одразу в бот
     const used = await run(env, 'UPDATE promos SET used_at = ?, used_ref = ? WHERE code = ? AND used_at IS NULL', now(), order.ref, order.promo);
@@ -469,7 +473,7 @@ async function consultContact(env, request) {
   await run(env, 'UPDATE orders SET phone = ?, email = ? WHERE ref = ?', phone, email, o.ref);
   if (first) {
     await logEvent(env, o.ref, 'consult', 'contacts received');
-    await notifyAdmins(env, `📇 Контакти клієнтки (${planTitle(o)}, ${o.eur} €):\nТелефон: ${phone}\nEmail: ${email}\nЗамовлення ${o.ref}`);
+    await notifyAdmins(env, `📇 Контакти клієнтки (${planTitle(o)}, ${sumText(o)}):\nТелефон: ${phone}\nEmail: ${email}\nЗамовлення ${o.ref}`);
     await sendConsultEmail(env, { ...o, phone, email }).catch((e) => logEvent(env, o.ref, 'email', `error ${e.message}`));
   }
   return json({ ok: true, bot: consultBotLink(env, o) });
@@ -792,7 +796,7 @@ async function adminApi(env, request, path) {
     const promos = Object.fromEntries((await all(env, 'SELECT ref, code, expires_at, used_at FROM promos WHERE ref IS NOT NULL')).map((p) => [p.ref, p]));
     return json({ orders: rows.map((o) => ({ ...o, link: ['paid', 'manual'].includes(o.status) && o.kind !== 'consult' ? botLink(env, o.token) : null, token: undefined, next_label: fmtKyiv(o.next_at),
       promo_info: promos[o.ref] ? { code: promos[o.ref].code, until: fmtDate(promos[o.ref].expires_at), used: !!promos[o.ref].used_at } : null,
-      plan_title: o.kind === 'consult' ? (CONSULT.plans[o.plan]?.title || o.plan) : null })) });
+      plan_title: o.kind === 'consult' ? planTitle(o) : null })) });
   }
 
   if (path === 'log') {
@@ -919,6 +923,7 @@ export default {
       if (p === '/pay/return') {
         let ref = url.searchParams.get('ref') || '';
         if (!ref && request.method === 'POST') { const f = await request.formData().catch(() => null); ref = f?.get('orderReference') || ''; }
+        if (ref.startsWith('NK-CLI-')) return Response.redirect(`${url.origin}${CONSULT.plans.client?.page || '/forclients/'}dyakuyu.html?ref=${encodeURIComponent(ref)}`, 303);
         if (ref.startsWith('NK-CON-')) return Response.redirect(`${url.origin}${CONSULT.page}dyakuyu.html?ref=${encodeURIComponent(ref)}`, 303);
         return Response.redirect(`${url.origin}/perezavantazhennya/dyakuyu.html?ref=${encodeURIComponent(ref)}`, 303);
       }
@@ -932,7 +937,7 @@ export default {
         if (o.kind === 'consult') {
           const paidOk = o.status === 'paid';
           const contactsDone = !!o.promo || !!o.email;
-          return json({ status: o.status, test: !!o.test, kind: 'consult', plan: planTitle(o), eur: o.eur, promo: !!o.promo,
+          return json({ status: o.status, test: !!o.test, kind: 'consult', plan: planTitle(o), eur: o.eur, uah: o.amount, promo: !!o.promo,
             need_contacts: paidOk && !contactsDone, telegram_sent: paidOk && !!o.promo && !!o.chat_id,
             bot: paidOk && contactsDone ? consultBotLink(env, o) : null, calendar: !!CONSULT.calendar_url });
         }
